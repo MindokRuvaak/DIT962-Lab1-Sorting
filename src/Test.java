@@ -3,7 +3,7 @@ import java.util.*;
 public class Test {
     private static Bench.Function<int[], int[]> algorithm =
         // Change to Bench.quickSort or Bench.mergeSort as appropriate.
-        Bench.insertionSort;
+        Bench.quickSort;
 
     private static boolean check(int[] array) {
         int[] reference = Arrays.copyOf(array, array.length);
@@ -48,7 +48,7 @@ public class Test {
     }
     
     public static void main(String[] args) {
-        for (int size = 0; ; size++) {
+        for (int size = 0; ; size+=Math.max(1, size/10)) {
             System.out.printf("Testing on arrays of size %d...\n", size);
             int[] sortedSample = Bench.generateSample(size, 0);
             int[] partiallySortedSample = Bench.generateSample(size, 5);

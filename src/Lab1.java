@@ -1,6 +1,13 @@
+import java.util.Arrays;
+import java.util.Random;
+
 public class Lab1 {
     /** Sorting algorithms **/
-
+    public static void main(String[] args) {
+        int[] arr = { 5, 3, 9, 2, 8, 7, 3, 2, 1, 4 };
+        quickSort(arr);
+        System.out.println(Arrays.toString(arr));
+    }
     // Insertion sort.
 
     public static void insertionSort(int[] array) {
@@ -8,19 +15,60 @@ public class Lab1 {
     }
 
     // Quicksort.
-
     public static void quickSort(int[] array) {
-        throw new UnsupportedOperationException();
+        if (array.length > 0) {
+            quickSort(array, 0, array.length - 1); // quicksort the entire array
+        }
     }
 
     // Quicksort part of an array
     private static void quickSort(int[] array, int begin, int end) {
+        // Random pivot
+        swap(array, begin, (new Random()).nextInt(begin, end + 1));
+        // inclusive origin, exclusive bound
+        int partitionIndex = partition(array, begin, end);
+        if (begin < partitionIndex - 1) {
+            quickSort(array, begin, partitionIndex - 1);
+        }
+        if (end > partitionIndex + 1) {
+            quickSort(array, partitionIndex + 1, end);
+        }
     }
 
     // Partition part of an array, and return the index where the pivot
     // ended up.
     private static int partition(int[] array, int begin, int end) {
-        throw new UnsupportedOperationException();
+        int piv = array[begin];
+        int lo = begin + 1; //pivot element located at index begin, begin at element after
+        int hi = end;
+
+        while (hi >= lo) {
+            lo = advanceLo(array, lo, piv, end);
+            hi = advanceHi(array, hi, piv, begin + 1);
+            if (hi >= lo) {
+                swap(array, lo, hi);
+                lo++;
+                hi--;
+            }
+        }
+        swap(array, begin, hi);
+
+        return hi;
+    }
+
+
+    private static int advanceHi(int[] array, int hi, int piv, int begin) {
+        while (hi >= begin && array[hi] >= piv) {
+            hi--;
+        }
+        return hi;
+    }
+
+    private static int advanceLo(int[] array, int lo, int piv, int end) {
+        while ( lo <= end && array[lo] <= piv) {
+            lo++;
+        }
+        return lo;
     }
 
     // Swap two elements in an array
