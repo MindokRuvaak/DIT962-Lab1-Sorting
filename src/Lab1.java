@@ -5,7 +5,7 @@ public class Lab1 {
     /** Sorting algorithms **/
     public static void main(String[] args) {
         int[] arr = { 5, 3, 9, 2, 8, 7, 3, 2, 1, 4 };
-        quickSort(arr);
+            quickSort(arr);
         System.out.println(Arrays.toString(arr));
     }
     // Insertion sort.
@@ -23,8 +23,6 @@ public class Lab1 {
 
     // Quicksort part of an array
     private static void quickSort(int[] array, int begin, int end) {
-        // Random pivot
-        swap(array, begin, (new Random()).nextInt(begin, end + 1));
         // inclusive origin, exclusive bound
         int partitionIndex = partition(array, begin, end);
         if (begin < partitionIndex - 1) {
