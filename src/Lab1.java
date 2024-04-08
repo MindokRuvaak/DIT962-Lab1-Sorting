@@ -24,12 +24,12 @@ public class Lab1 {
     // Quicksort part of an array
     private static void quickSort(int[] array, int begin, int end) {
         // inclusive origin, exclusive bound
-        int partitionIndex = partition(array, begin, end);
-        if (begin < partitionIndex - 1) {
-            quickSort(array, begin, partitionIndex - 1);
+        int pivotElement = partition(array, begin, end);
+        if (begin < pivotElement - 1) {
+            quickSort(array, begin, pivotElement - 1);
         }
-        if (end > partitionIndex + 1) {
-            quickSort(array, partitionIndex + 1, end);
+        if (end > pivotElement + 1) {
+            quickSort(array, pivotElement + 1, end);
         }
     }
 
