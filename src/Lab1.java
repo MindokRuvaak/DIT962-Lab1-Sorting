@@ -8,6 +8,9 @@ public class Lab1 {
         int[] arr1 = { 1, 2, 3, 4, 5, 6, 7, 8 };
         int[] arr2 = { 1, 2, 3, 4, 5 };
         System.out.println(Arrays.toString(merge(arr1, arr2)));
+
+        int[] arr3 = { 36, 74, 2, 5, 7, 8, 9, 7, 4, 22, 2 };
+        System.out.println(Arrays.toString(mergeSort(arr3)));
     }
 
     // Insertion sort.
@@ -90,12 +93,29 @@ public class Lab1 {
     // Mergesort.
 
     public static int[] mergeSort(int[] array) {
-        throw new UnsupportedOperationException();
+        if (array.length == 0) {
+            return array;
+        }
+        return mergeSort(array, 0, array.length);
     }
 
     // Mergesort part of an array
     private static int[] mergeSort(int[] array, int begin, int end) {
-        throw new UnsupportedOperationException();
+        if ((end - begin) == 1) {
+            return array;
+        }
+        int mid = (begin+end) / 2;
+        return merge(mergeSort(slice(array, begin, mid)),
+                mergeSort(slice(array, mid, end)));
+    }
+
+    private static int[] slice(int[] array, int from, int to) {
+        int[] nArr = new int[to-from];
+        int c = 0;
+        for (int i = from; i < to; i++) {
+            nArr[c++] = array[i];
+        }
+        return nArr;
     }
 
     // Merge two sorted arrays into one
