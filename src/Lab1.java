@@ -5,8 +5,8 @@ public class Lab1 {
      * Sorting algorithms
      **/
     public static void main(String[] args) {
-        int[] arr1 = {1,2,3,4,5,6,7,8};
-        int[] arr2 = {1,2,3,4,5};
+        int[] arr1 = { 1, 2, 3, 4, 5, 6, 7, 8 };
+        int[] arr2 = { 1, 2, 3, 4, 5 };
         System.out.println(Arrays.toString(merge(arr1, arr2)));
     }
 
@@ -49,7 +49,7 @@ public class Lab1 {
     // ended up.
     private static int partition(int[] array, int begin, int end) {
         int piv = array[begin];
-        int lo = begin + 1; //pivot element located at index begin, begin at element after
+        int lo = begin + 1; // pivot element located at index begin, begin at element after
         int hi = end;
 
         while (hi >= lo) {
@@ -65,7 +65,6 @@ public class Lab1 {
 
         return hi;
     }
-
 
     private static int advanceHi(int[] array, int hi, int piv, int begin) {
         while (hi >= begin && array[hi] >= piv) {
@@ -101,18 +100,17 @@ public class Lab1 {
 
     // Merge two sorted arrays into one
     private static int[] merge(int[] left, int[] right) {
-        int leftPointer = 0, rightPointer = 0;
+        int leftPointer = 0, rightPointer = 0, ind = 0;
         int[] returnArr = new int[left.length + right.length];
-        for (int i = 0; i < returnArr.length; i++) {
-            if (right.length > rightPointer && left.length > leftPointer) {
-
-                if (left[leftPointer] <= right[rightPointer]) {
-                    returnArr[i] = left[leftPointer++];
-                } else {
-                    returnArr[i] = right[rightPointer++];
-                }
-
-            } else if (left.length > leftPointer) {
+        while (leftPointer < left.length && rightPointer < right.length) {
+            if (left[leftPointer] <= right[rightPointer]) {
+                returnArr[ind++] = left[leftPointer++];
+            } else {
+                returnArr[ind++] = right[rightPointer++];
+            }
+        }
+        for (int i = ind; i < returnArr.length; i++) {
+            if (left.length > leftPointer) {
                 returnArr[i] = left[leftPointer++];
             } else {
                 returnArr[i] = right[rightPointer++];
