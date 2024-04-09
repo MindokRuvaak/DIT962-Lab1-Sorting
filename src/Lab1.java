@@ -1,16 +1,19 @@
 import java.util.Arrays;
 
 public class Lab1 {
-    /** Sorting algorithms **/
+    /**
+     * Sorting algorithms
+     **/
     public static void main(String[] args) {
-        int[] arr = { 5, 3, 9, 2, 8, 7, 3, 2, 1, 4 };
-            quickSort(arr);
-        System.out.println(Arrays.toString(arr));
+        int[] arr1 = {1,2,3,4,5,6,7,8};
+        int[] arr2 = {1,2,3,4,5};
+        System.out.println(Arrays.toString(merge(arr1, arr2)));
     }
+
     // Insertion sort.
     public static void insertionSort(int[] array) {
         for (int lastSortedIndex = 0; lastSortedIndex < array.length - 1; lastSortedIndex++) {
-            insert(array, lastSortedIndex, array[lastSortedIndex+1]);
+            insert(array, lastSortedIndex, array[lastSortedIndex + 1]);
         }
     }
 
@@ -72,7 +75,7 @@ public class Lab1 {
     }
 
     private static int advanceLo(int[] array, int lo, int piv, int end) {
-        while ( lo <= end && array[lo] <= piv) {
+        while (lo <= end && array[lo] <= piv) {
             lo++;
         }
         return lo;
@@ -98,6 +101,23 @@ public class Lab1 {
 
     // Merge two sorted arrays into one
     private static int[] merge(int[] left, int[] right) {
-        throw new UnsupportedOperationException();
+        int leftPointer = 0, rightPointer = 0;
+        int[] returnArr = new int[left.length + right.length];
+        for (int i = 0; i < returnArr.length; i++) {
+            if (right.length > rightPointer && left.length > leftPointer) {
+
+                if (left[leftPointer] <= right[rightPointer]) {
+                    returnArr[i] = left[leftPointer++];
+                } else {
+                    returnArr[i] = right[rightPointer++];
+                }
+
+            } else if (left.length > leftPointer) {
+                returnArr[i] = left[leftPointer++];
+            } else {
+                returnArr[i] = right[rightPointer++];
+            }
+        }
+        return returnArr;
     }
 }
