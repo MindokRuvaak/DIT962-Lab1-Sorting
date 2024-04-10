@@ -100,7 +100,7 @@ public class Lab1 {
     // Mergesort.
 
     public static int[] mergeSort(int[] array) {
-        if (array.length == 0) {
+        if (array.length <= 1) {
             return array;
         }
         return mergeSort(array, 0, array.length);
