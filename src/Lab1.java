@@ -23,9 +23,10 @@ public class Lab1 {
     private static void insert(int[] array, int lastSortedIndex, int toBeInserted) {
         for (int i = lastSortedIndex; i >= 0; i--) {
             if (array[i] < toBeInserted) {
+                array[i+1] = toBeInserted;
                 return;
             }
-            swap(array, i, i + 1);
+            array[i+1] = array[i];
         }
     }
 
