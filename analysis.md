@@ -8,7 +8,7 @@
 
 ## Which should you choose if you don’t know anything about the test data? & Are there circumstances when you should definitely avoid a certain algorithm?
 
-- If you know nothing about the data set, merge sort is an all round decent algorithm and a good middleground not overly dependent on data sets.
+- If you know nothing about the data, then merge sort is an all round decent algorithm that preforms well on most types of data.
 - If you know the data is at least almost sorted, don't use quickSort. If you have a large set of data, avoid insertionSort unless you know all data is already sorted (but then why sort the data in the first place?).
 
 # Benchmark results
