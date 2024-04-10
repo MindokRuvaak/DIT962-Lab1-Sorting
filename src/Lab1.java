@@ -5,12 +5,14 @@ public class Lab1 {
      * Sorting algorithms
      **/
     public static void main(String[] args) {
-        int[] arr1 = { 1, 2, 3, 4, 5, 6, 7, 8 };
-        int[] arr2 = { 1, 2, 3, 4, 5 };
-        System.out.println(Arrays.toString(merge(arr1, arr2)));
+        // int[] arr1 = { 1, 2, 3, 4, 5, 6, 7, 8 };
+        // int[] arr2 = { 1, 2, 3, 4, 5 };
+        // System.out.println(Arrays.toString(merge(arr1, arr2)));
 
         int[] arr3 = { 36, 74, 2, 5, 7, 8, 9, 7, 4, 22, 2 };
-        System.out.println(Arrays.toString(mergeSort(arr3)));
+        insertionSort(arr3);
+        System.out.println(Arrays.toString(arr3));
+        // System.out.println(Arrays.toString(mergeSort(arr3)));
     }
 
     // Insertion sort.
@@ -22,11 +24,15 @@ public class Lab1 {
 
     private static void insert(int[] array, int lastSortedIndex, int toBeInserted) {
         for (int i = lastSortedIndex; i >= 0; i--) {
-            if (array[i] < toBeInserted) {
+            if (array[i] > toBeInserted) {
+                array[i+1] = array[i];
+                if (i==0) {
+                    array[i] = toBeInserted;
+                } 
+            } else {
                 array[i+1] = toBeInserted;
-                return;
+                break;
             }
-            array[i+1] = array[i];
         }
     }
 
