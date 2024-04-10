@@ -1,13 +1,15 @@
 # When would you reccomend each algorithm?
 
-- Is there a size cutoff at which a different algorithm becomes best? & How does the type of test data affect which algorithm you should choose?
-- - Insertion sort is best in all categories at a low number of data values, n <= 30, and still best for almost sorted arrays upp to n <= 3000. Insertion sort always performs best for sorted arrays
-- - Quick sort is the best at sorting random arrays for n >= 100 but does not perform well with nearly sorted arrays and extreamly poorly with sorted arrays.
-- - Merge sort is decent in all cases and performs the best for lager data sets espesially for somewhat sorted arrays
+## Is there a size cutoff at which a different algorithm becomes best? & How does the type of test data affect which algorithm you should choose?
 
-- Which should you choose if you don’t know anything about the test data? & Are there circumstances when you should definitely avoid a certain algorithm?
-- - If you know nothing about the data set, merge sort is an all round decent algorithm and a good middleground not overly dependent on data sets.
-- - If you know the data is at least almost sorted, don't use quickSort. If you have a large set of data, avoid insertionSort unless you know all data is already sorted.
+- Insertion sort is best in all categories at a low number of data values, n <= 30, and still best for almost sorted arrays upp to n <= 3000. Insertion sort always performs best for sorted arrays
+- Quick sort is the best at sorting random arrays for n >= 100 but does not perform well with nearly sorted arrays and extreamly poorly with sorted arrays.
+- Merge sort is decent in all cases and performs the best for lager data sets espesially for somewhat sorted arrays
+
+## Which should you choose if you don’t know anything about the test data? & Are there circumstances when you should definitely avoid a certain algorithm?
+
+- If you know nothing about the data set, merge sort is an all round decent algorithm and a good middleground not overly dependent on data sets.
+- If you know the data is at least almost sorted, don't use quickSort. If you have a large set of data, avoid insertionSort unless you know all data is already sorted (but then why sort the data in the first place?).
 
 # Benchmark results
 
