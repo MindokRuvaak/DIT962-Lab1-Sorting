@@ -1,19 +1,8 @@
-import java.util.Arrays;
 
 public class Lab1 {
     /**
      * Sorting algorithms
      **/
-    public static void main(String[] args) {
-        // int[] arr1 = { 1, 2, 3, 4, 5, 6, 7, 8 };
-        // int[] arr2 = { 1, 2, 3, 4, 5 };
-        // System.out.println(Arrays.toString(merge(arr1, arr2)));
-
-        int[] arr3 = { 36, 74, 2, 5, 7, 8, 9, 7, 4, 22, 2 };
-        insertionSort(arr3);
-        System.out.println(Arrays.toString(arr3));
-        // System.out.println(Arrays.toString(mergeSort(arr3)));
-    }
 
     // Insertion sort.
     public static void insertionSort(int[] array) {
@@ -24,13 +13,13 @@ public class Lab1 {
 
     private static void insert(int[] array, int lastSortedIndex, int toBeInserted) {
         for (int i = lastSortedIndex; i >= 0; i--) {
-            if (array[i] > toBeInserted) {
-                array[i+1] = array[i];
-                if (i==0) {
-                    array[i] = toBeInserted;
-                } 
+            if (array[i] > toBeInserted) { // Shift the already sorted elemet ''upp'' one step
+                array[i + 1] = array[i];
+                if (i == 0) { // Inserted element is smaller than all the already sorted elements
+                    array[i] = toBeInserted; 
+                }
             } else {
-                array[i+1] = toBeInserted;
+                array[i + 1] = toBeInserted;
                 break;
             }
         }
@@ -98,7 +87,6 @@ public class Lab1 {
     }
 
     // Mergesort.
-
     public static int[] mergeSort(int[] array) {
         if (array.length <= 1) {
             return array;
@@ -111,13 +99,13 @@ public class Lab1 {
         if ((end - begin) == 1) {
             return array;
         }
-        int mid = (begin+end) / 2;
+        int mid = (begin + end) / 2;
         return merge(mergeSort(slice(array, begin, mid)),
                 mergeSort(slice(array, mid, end)));
     }
 
     private static int[] slice(int[] array, int from, int to) {
-        int[] nArr = new int[to-from];
+        int[] nArr = new int[to - from];
         int c = 0;
         for (int i = from; i < to; i++) {
             nArr[c++] = array[i];
