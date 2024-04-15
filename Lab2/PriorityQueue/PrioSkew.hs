@@ -24,11 +24,9 @@ merge t1@(Node l1 v1 r1) t2@(Node l2 v2 r2)
   where
     swapSubtrees (Node l v r) = Node r v l
 
-delete :: Ord a => SkewHeap a -> a -> SkewHeap a
-delete Empty _ = Empty
-delete (Node leftChild value rightChild) toRemove
-  | toRemove == value = merge leftChild rightChild
-  | otherwise = Node (delete leftChild toRemove) value (delete rightChild toRemove)
+delete :: Ord a => SkewHeap a -> SkewHeap a
+delete Empty        = Empty
+delete (Node l v r) = merge l r
 
 insert :: Ord a => SkewHeap a -> a -> SkewHeap a
 insert tree toInsert = merge tree (Node Empty toInsert Empty)
