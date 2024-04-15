@@ -2,7 +2,7 @@ import Control.Applicative
 import System.Environment
 import System.IO
 
-import Lab2.PrioSkew
+import PriorityQueue.PrioSkew 
 -- | Bids.
 
 data Bid
