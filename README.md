@@ -1,2 +1,2 @@
-# DIT962-Lab1-Sorting
+# DIT962-Labs
 Group 4
