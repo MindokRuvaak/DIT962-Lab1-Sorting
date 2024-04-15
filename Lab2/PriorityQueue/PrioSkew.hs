@@ -28,11 +28,14 @@ merge t1@(Node l1 v1 r1) t2@(Node l2 v2 r2)
   where
     swapSubtrees (Node l v r) = Node r v l
 
--- removes root element
+-- removes an arbitrary element element
 -- O(log n)
-delete :: Ord a => SkewHeap a -> SkewHeap a
-delete Empty        = Empty
-delete (Node l v r) = merge l r
+delete :: Ord a => a -> SkewHeap a -> SkewHeap a
+delete toDelete Empty = Empty
+delete toDelete (Node l v r)
+  | v == toDelete = merge l r
+  | otherwise = Node (delete toDelete l) v (delete toDelete r)
+
 
 -- inserts an element into the heap using the skew merge
 -- O(Log n)
