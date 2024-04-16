@@ -8,24 +8,17 @@ public class Lab1 {
     // Insertion sort.
     public static void insertionSort(int[] array) {
         for (int lastSortedIndex = 0; lastSortedIndex < array.length - 1; lastSortedIndex++) {
-            // store the next element to be sorted in a temporary variable
             int toBeInserted = array[lastSortedIndex + 1]; 
-            // step through the sorted part of the array
             for (int i = lastSortedIndex; i >= 0; i--) {
-                // if the to-be-inserted element is smaller than the current sorted element:
-                if (array[i] > toBeInserted) { 
-                    // shift the already sorted elemet ''upp'' one step
+                if (array[i] > toBeInserted) { // we aren't at the right spot for the element
                     array[i + 1] = array[i];
-                    // and if the front of the array has been reached
-                    if (i == 0) { 
-                        // inserted element is smaller than all the already sorted elements
+                    // if the element is the smallest so far we need to handle that as an edge case
+                    if (i == 0) {
                         array[i] = toBeInserted;
                     }
-                } else { // otherwise the place for the to-be-inserted element has been found 
-                    // place the element
-                    array[i + 1] = toBeInserted;
-                    // exit the for-loop and start again
-                    break;
+                } else { // we found the spot for the element
+                    array[i + 1] = toBeInserted;                    // exit the for-loop and start again
+                    break; // only breaks out of the first for loop
                 }
             }
         }
@@ -89,7 +82,7 @@ public class Lab1 {
             return array;
         }
         int mid = (0 + array.length) / 2;
-        return merge(mergeSort(Arrays.copyOfRange(array, 0, mid)), 
+        return merge(mergeSort(Arrays.copyOfRange(array, 0, mid)),
                     mergeSort(Arrays.copyOfRange(array, mid, array.length)));
     }
 
