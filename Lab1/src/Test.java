@@ -3,7 +3,7 @@ import java.util.*;
 public class Test {
     private static Bench.Function<int[], int[]> algorithm =
         // Change to Bench.quickSort or Bench.mergeSort as appropriate.
-        Bench.insertionSort;
+        Bench.mergeSort;
 
     private static boolean check(int[] array) {
         int[] reference = Arrays.copyOf(array, array.length);

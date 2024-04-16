@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class Lab1 {
     /**
@@ -7,20 +8,25 @@ public class Lab1 {
     // Insertion sort.
     public static void insertionSort(int[] array) {
         for (int lastSortedIndex = 0; lastSortedIndex < array.length - 1; lastSortedIndex++) {
-            insert(array, lastSortedIndex, array[lastSortedIndex + 1]);
-        }
-    }
-
-    private static void insert(int[] array, int lastSortedIndex, int toBeInserted) {
-        for (int i = lastSortedIndex; i >= 0; i--) {
-            if (array[i] > toBeInserted) { // Shift the already sorted elemet ''upp'' one step
-                array[i + 1] = array[i];
-                if (i == 0) { // Inserted element is smaller than all the already sorted elements
-                    array[i] = toBeInserted; 
+            // store the next element to be sorted in a temporary variable
+            int toBeInserted = array[lastSortedIndex + 1]; 
+            // step through the sorted part of the array
+            for (int i = lastSortedIndex; i >= 0; i--) {
+                // if the to-be-inserted element is smaller than the current sorted element:
+                if (array[i] > toBeInserted) { 
+                    // shift the already sorted elemet ''upp'' one step
+                    array[i + 1] = array[i];
+                    // and if the front of the array has been reached
+                    if (i == 0) { 
+                        // inserted element is smaller than all the already sorted elements
+                        array[i] = toBeInserted;
+                    }
+                } else { // otherwise the place for the to-be-inserted element has been found 
+                    // place the element
+                    array[i + 1] = toBeInserted;
+                    // exit the for-loop and start again
+                    break;
                 }
-            } else {
-                array[i + 1] = toBeInserted;
-                break;
             }
         }
     }
@@ -52,8 +58,12 @@ public class Lab1 {
         int hi = end;
 
         while (hi >= lo) {
-            lo = advanceLo(array, lo, piv, end);
-            hi = advanceHi(array, hi, piv, begin + 1);
+            while (lo <= end && array[lo] <= piv) {
+                lo++;
+            }
+            while (hi > begin && array[hi] >= piv) {
+                hi--;
+            }
             if (hi >= lo) {
                 swap(array, lo, hi);
                 lo++;
@@ -65,19 +75,6 @@ public class Lab1 {
         return hi;
     }
 
-    private static int advanceHi(int[] array, int hi, int piv, int begin) {
-        while (hi >= begin && array[hi] >= piv) {
-            hi--;
-        }
-        return hi;
-    }
-
-    private static int advanceLo(int[] array, int lo, int piv, int end) {
-        while (lo <= end && array[lo] <= piv) {
-            lo++;
-        }
-        return lo;
-    }
 
     // Swap two elements in an array
     private static void swap(int[] array, int i, int j) {
@@ -91,26 +88,9 @@ public class Lab1 {
         if (array.length <= 1) {
             return array;
         }
-        return mergeSort(array, 0, array.length);
-    }
-
-    // Mergesort part of an array
-    private static int[] mergeSort(int[] array, int begin, int end) {
-        if ((end - begin) == 1) {
-            return array;
-        }
-        int mid = (begin + end) / 2;
-        return merge(mergeSort(slice(array, begin, mid)),
-                mergeSort(slice(array, mid, end)));
-    }
-
-    private static int[] slice(int[] array, int from, int to) {
-        int[] nArr = new int[to - from];
-        int c = 0;
-        for (int i = from; i < to; i++) {
-            nArr[c++] = array[i];
-        }
-        return nArr;
+        int mid = (0 + array.length) / 2;
+        return merge(mergeSort(Arrays.copyOfRange(array, 0, mid)), 
+                    mergeSort(Arrays.copyOfRange(array, mid, array.length)));
     }
 
     // Merge two sorted arrays into one

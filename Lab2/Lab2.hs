@@ -23,9 +23,6 @@ instance Eq BuyOrder where
 
 instance Ord BuyOrder where 
   compare (BuyOrder _ price1) (BuyOrder _ price2) = compare price1 price2
---  (BuyOrder _ price1) > (BuyOrder _ price2) = price1 > price2
---  (BuyOrder _ price1) < (BuyOrder _ price2) = price1 < price2
-
 
 
 
