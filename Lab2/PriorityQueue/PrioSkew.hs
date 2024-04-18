@@ -2,6 +2,7 @@ module PriorityQueue.PrioSkew
   ( delete,
     insert,
     SkewHeap,
+    rootOf,
     {- merge, -}
   ) -- TODO: Add documentation and write down time complexity in big-O
 where

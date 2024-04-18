@@ -2,6 +2,7 @@ import Control.Applicative
 import PriorityQueue.PrioSkew
 import System.Environment
 import System.IO
+import Data.Maybe (isJust, fromJust)
 
 -- | Bids.
 data Bid
@@ -19,21 +20,26 @@ type Price = Integer
 data BuyOrder = BuyOrder Person Price deriving (Show)
 
 instance Eq BuyOrder where
- (BuyOrder name1 _) == (BuyOrder name2 _) = name1 == name2
+ (BuyOrder name1 price1) == (BuyOrder name2 price2) = name1 == name2 && price1 == price2
 
 instance Ord BuyOrder where
   compare (BuyOrder _ price1) (BuyOrder _ price2) = compare price1 price2
 
 
+buyingPrice :: BuyOrder -> Price
+buyingPrice (BuyOrder _ p) = p
+
 
 data SellOrder = SellOrder Person Price deriving (Show)
 instance Eq SellOrder where
- (SellOrder name1 _) == (SellOrder name2 _) = name1 == name2
+ (SellOrder name1 price1) == (SellOrder name2 price2) = name1 == name2 && price1 == price2
 
 instance Ord SellOrder where
   compare (SellOrder _ price1) (SellOrder _ price2) = compare price2 price1
 
 
+sellingPrice :: SellOrder -> Price
+sellingPrice (SellOrder _ p) = p
 
 -- | Parses a bid. Incorrectly formatted bids are returned verbatim
 -- (tagged with 'Left').
@@ -82,13 +88,44 @@ main = do
 
 -- | The core of the program. Takes a list of bids and executes them.
 trade :: [Bid] -> IO ()
-trade = undefined
+trade bids = undefined -- TODO: implement
+
 
 type OrderBook = (SkewHeap BuyOrder, SkewHeap SellOrder)
 
+addBids :: OrderBook -> [Bid] -> OrderBook
+addBids = foldl addAndUpdate
+  where
+    addAndUpdate :: OrderBook -> Bid -> OrderBook
+    addAndUpdate ob b = orderCheck $ addBid ob b
 
+
+-- please try to improve, this feels bad but I can't figure out anything better ;_;
 addBid :: OrderBook -> Bid -> OrderBook
-addBid orderBook bid = case bid of
-  Buy person price ->  (insert (fst orderBook) (BuyOrder person price), snd orderBook)
-  
+addBid (buyOrders, sellOrders) bid = case bid of
+  Buy person price -> let newBuyOrder = BuyOrder person price in
+    (insert buyOrders newBuyOrder, sellOrders)
+  Sell person price -> let newSellOrder = SellOrder person price in
+    (buyOrders, insert sellOrders newSellOrder )
+  NewBuy person oldPrice newPrice ->
+    let (oldBuy, newBuy) = (BuyOrder person oldPrice, BuyOrder person newPrice) in
+    (reNewOrder buyOrders oldBuy newBuy, sellOrders)
+  NewSell person oldPrice newPrice ->
+    let (oldSell, newSell) = (SellOrder person oldPrice, SellOrder person newPrice) in
+    (buyOrders, reNewOrder sellOrders oldSell newSell)
 
+
+reNewOrder :: Ord a => SkewHeap a -> a -> a -> SkewHeap a
+reNewOrder sh oBid = insert (delete oBid sh)
+
+orderCheck :: OrderBook -> OrderBook
+orderCheck oB@(buys, sells) 
+  | bothHaveVaues && buyingPrice (fromJust bRoot) >= sellingPrice (fromJust sRoot) = doTrade oB
+  | otherwise = oB -- do nothng to the order book
+  where
+    bRoot = rootOf buys
+    sRoot = rootOf sells
+    bothHaveVaues = isJust bRoot && isJust sRoot
+
+doTrade :: OrderBook -> OrderBook
+doTrade = undefined 
