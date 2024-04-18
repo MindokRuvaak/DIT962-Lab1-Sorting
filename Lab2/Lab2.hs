@@ -21,7 +21,7 @@ data BuyOrder = BuyOrder Person Price deriving (Show)
 instance Eq BuyOrder where
  (BuyOrder name1 _) == (BuyOrder name2 _) = name1 == name2
 
-instance Ord BuyOrder where 
+instance Ord BuyOrder where
   compare (BuyOrder _ price1) (BuyOrder _ price2) = compare price1 price2
 
 
@@ -30,7 +30,7 @@ data SellOrder = SellOrder Person Price deriving (Show)
 instance Eq SellOrder where
  (SellOrder name1 _) == (SellOrder name2 _) = name1 == name2
 
-instance Ord SellOrder where 
+instance Ord SellOrder where
   compare (SellOrder _ price1) (SellOrder _ price2) = compare price2 price1
 
 
@@ -83,3 +83,12 @@ main = do
 -- | The core of the program. Takes a list of bids and executes them.
 trade :: [Bid] -> IO ()
 trade = undefined
+
+type OrderBook = (SkewHeap BuyOrder, SkewHeap SellOrder)
+
+
+addBid :: OrderBook -> Bid -> OrderBook
+addBid orderBook bid = case bid of
+  Buy person price ->  (insert (fst orderBook) (BuyOrder person price), snd orderBook)
+  
+
