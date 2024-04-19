@@ -1,8 +1,8 @@
 import Control.Applicative
+import Data.Maybe (fromJust, isJust)
 import PriorityQueue.PrioSkew
 import System.Environment
 import System.IO
-import Data.Maybe (isJust, fromJust)
 
 -- | Bids.
 data Bid
@@ -20,23 +20,21 @@ type Price = Integer
 data BuyOrder = BuyOrder Person Price deriving (Show)
 
 instance Eq BuyOrder where
- (BuyOrder name1 price1) == (BuyOrder name2 price2) = name1 == name2 && price1 == price2
+  (BuyOrder name1 price1) == (BuyOrder name2 price2) = name1 == name2 && price1 == price2
 
 instance Ord BuyOrder where
   compare (BuyOrder _ price1) (BuyOrder _ price2) = compare price1 price2
 
-
 buyingPrice :: BuyOrder -> Price
 buyingPrice (BuyOrder _ p) = p
 
-
 data SellOrder = SellOrder Person Price deriving (Show)
+
 instance Eq SellOrder where
- (SellOrder name1 price1) == (SellOrder name2 price2) = name1 == name2 && price1 == price2
+  (SellOrder name1 price1) == (SellOrder name2 price2) = name1 == name2 && price1 == price2
 
 instance Ord SellOrder where
   compare (SellOrder _ price1) (SellOrder _ price2) = compare price2 price1
-
 
 sellingPrice :: SellOrder -> Price
 sellingPrice (SellOrder _ p) = p
@@ -88,55 +86,55 @@ main = do
 
 -- | The core of the program. Takes a list of bids and executes them.
 trade :: [Bid] -> IO ()
-trade bids = undefined  -- TODO: implement
-
+trade bids = undefined -- TODO: implement
 
 newtype OrderBook = OrderBook (SkewHeap BuyOrder, SkewHeap SellOrder)
+
 instance Show OrderBook where
-  show (OrderBook (b,s)) = "Order book:\n" ++ "Sellers: " ++ show s ++ "\n" ++ "Buyers: " ++ show b ++ "\n"
+  show (OrderBook (b, s)) = "Order book:\n" ++ "Sellers: " ++ show s ++ "\n" ++ "Buyers: " ++ show b ++ "\n"
 
 performTrade :: OrderBook -> [Bid] -> IO ()
 performTrade oB [] = print oB
-performTrade oB (bid:bids) = do 
-  if orderCheck tempOB 
-    then do 
+performTrade oB (bid : bids) = do
+  if orderCheck tempOB
+    then do
       nOB <- doTrade tempOB
       performTrade nOB bids
-    else 
-      performTrade tempOB bids
+    else performTrade tempOB bids
   where
     tempOB = addBid oB bid
 
-{- addBids :: OrderBook -> [Bid] -> OrderBook 
+{- addBids :: OrderBook -> [Bid] -> OrderBook
 addBids = undefined  foldl addAndUpdate -- I frogor this deosnt work with printing / IO
   where
     addAndUpdate :: OrderBook -> Bid -> OrderBook
     addAndUpdate ob b = orderCheck $ addBid ob b -}
 
-
 -- please try to improve, this feels bad but I can't figure out anything better ;_;
 addBid :: OrderBook -> Bid -> OrderBook
 addBid (OrderBook (buyOrders, sellOrders)) bid = case bid of
-  Buy person price -> let newBuyOrder = BuyOrder person price in
-     OrderBook (insert buyOrders newBuyOrder, sellOrders)
-  Sell person price -> let newSellOrder = SellOrder person price in
-    OrderBook (buyOrders, insert sellOrders newSellOrder )
+  Buy person price ->
+    let newBuyOrder = BuyOrder person price
+     in OrderBook (insert buyOrders newBuyOrder, sellOrders)
+  Sell person price ->
+    let newSellOrder = SellOrder person price
+     in OrderBook (buyOrders, insert sellOrders newSellOrder)
   NewBuy person oldPrice newPrice ->
-    let (oldBuy, newBuy) = (BuyOrder person oldPrice, BuyOrder person newPrice) in
-    OrderBook (reNewOrder buyOrders oldBuy newBuy, sellOrders)
+    let (oldBuy, newBuy) = (BuyOrder person oldPrice, BuyOrder person newPrice)
+     in OrderBook (reNewOrder buyOrders oldBuy newBuy, sellOrders)
   NewSell person oldPrice newPrice ->
-    let (oldSell, newSell) = (SellOrder person oldPrice, SellOrder person newPrice) in
-    OrderBook (buyOrders, reNewOrder sellOrders oldSell newSell)
+    let (oldSell, newSell) = (SellOrder person oldPrice, SellOrder person newPrice)
+     in OrderBook (buyOrders, reNewOrder sellOrders oldSell newSell)
 
 -- | delete old bid from heap and insert new
 reNewOrder :: Ord a => SkewHeap a -> a -> a -> SkewHeap a
 reNewOrder sh oBid = insert (delete oBid sh)
 
--- | checks if trade the highest priority bids match and a trade should be performed, 
+-- | checks if trade the highest priority bids match and a trade should be performed,
 -- returns true if trade should be performed, otherwise false
 orderCheck :: OrderBook -> Bool
-orderCheck (OrderBook (buys, sells)) 
-  = bothHaveVaues && buyingPrice (fromJust bRoot) >= sellingPrice (fromJust sRoot)
+orderCheck (OrderBook (buys, sells)) =
+  bothHaveVaues && buyingPrice (fromJust bRoot) >= sellingPrice (fromJust sRoot)
   where
     bRoot = rootOf buys
     sRoot = rootOf sells
