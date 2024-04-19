@@ -88,18 +88,30 @@ main = do
 
 -- | The core of the program. Takes a list of bids and executes them.
 trade :: [Bid] -> IO ()
-trade bids = undefined -- TODO: implement
+trade bids = undefined  -- TODO: implement
 
 
 newtype OrderBook = OrderBook (SkewHeap BuyOrder, SkewHeap SellOrder)
 instance Show OrderBook where
   show (OrderBook (b,s)) = "Order book:\n" ++ "Sellers: " ++ show s ++ "\n" ++ "Buyers: " ++ show b ++ "\n"
 
-addBids :: OrderBook -> [Bid] -> OrderBook
-addBids = foldl addAndUpdate -- I frogor this deosnt work with printing / IO
+performTrade :: OrderBook -> [Bid] -> IO ()
+performTrade oB [] = print oB
+performTrade oB (bid:bids) = do 
+  if orderCheck tempOB 
+    then do 
+      nOB <- doTrade tempOB
+      performTrade nOB bids
+    else 
+      performTrade tempOB bids
+  where
+    tempOB = addBid oB bid
+
+{- addBids :: OrderBook -> [Bid] -> OrderBook 
+addBids = undefined  foldl addAndUpdate -- I frogor this deosnt work with printing / IO
   where
     addAndUpdate :: OrderBook -> Bid -> OrderBook
-    addAndUpdate ob b = orderCheck $ addBid ob b
+    addAndUpdate ob b = orderCheck $ addBid ob b -}
 
 
 -- please try to improve, this feels bad but I can't figure out anything better ;_;
@@ -116,21 +128,24 @@ addBid (OrderBook (buyOrders, sellOrders)) bid = case bid of
     let (oldSell, newSell) = (SellOrder person oldPrice, SellOrder person newPrice) in
     OrderBook (buyOrders, reNewOrder sellOrders oldSell newSell)
 
-
+-- | delete old bid from heap and insert new
 reNewOrder :: Ord a => SkewHeap a -> a -> a -> SkewHeap a
 reNewOrder sh oBid = insert (delete oBid sh)
 
-orderCheck :: OrderBook -> OrderBook
-orderCheck oB@(OrderBook (buys, sells))
-  | bothHaveVaues && buyingPrice (fromJust bRoot) >= sellingPrice (fromJust sRoot) = doTrade oB
-  | otherwise = oB -- do nothng to the order book
+-- | checks if trade the highest priority bids match and a trade should be performed, 
+-- returns true if trade should be performed, otherwise false
+orderCheck :: OrderBook -> Bool
+orderCheck (OrderBook (buys, sells)) 
+  = bothHaveVaues && buyingPrice (fromJust bRoot) >= sellingPrice (fromJust sRoot)
   where
     bRoot = rootOf buys
     sRoot = rootOf sells
     bothHaveVaues = isJust bRoot && isJust sRoot
 
-doTrade :: OrderBook -> OrderBook
-doTrade (OrderBook (buys, sells)) = OrderBook (delete buyingOrder buys, delete sellingOrder sells)
+doTrade :: OrderBook -> IO OrderBook
+doTrade oB@(OrderBook (buys, sells)) = do
+  print oB
+  return (OrderBook (delete buyingOrder buys, delete sellingOrder sells))
   where
     buyingOrder@(BuyOrder buyer buyingprice) = fromJust $ rootOf buys
     sellingOrder@(SellOrder seller sellingprice) = fromJust $ rootOf sells

@@ -7,7 +7,7 @@ module PriorityQueue.PrioSkew
   ) -- TODO: Add documentation and write down time complexity in big-O
 where
 
--- this is a max heap
+-- | this is a max heap
 data SkewHeap a
   = Empty
   | Node (SkewHeap a) a (SkewHeap a)
