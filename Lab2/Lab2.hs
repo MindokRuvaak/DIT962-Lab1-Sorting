@@ -86,21 +86,22 @@ main = do
 
 -- | The core of the program. Takes a list of bids and executes them.
 trade :: [Bid] -> IO ()
-trade bids = undefined -- TODO: implement
+trade = performTrades (OrderBook (emptySkewHeap, emptySkewHeap)) 
 
 newtype OrderBook = OrderBook (SkewHeap BuyOrder, SkewHeap SellOrder)
 
 instance Show OrderBook where
   show (OrderBook (b, s)) = "Order book:\n" ++ "Sellers: " ++ show s ++ "\n" ++ "Buyers: " ++ show b ++ "\n"
 
-performTrade :: OrderBook -> [Bid] -> IO ()
-performTrade oB [] = print oB
-performTrade oB (bid : bids) = do
+-- | the algoithm for trading given the list of bids
+performTrades :: OrderBook -> [Bid] -> IO ()
+performTrades oB [] = print oB
+performTrades oB (bid : bids) = do
   if orderCheck tempOB
     then do
       nOB <- doTrade tempOB
-      performTrade nOB bids
-    else performTrade tempOB bids
+      performTrades nOB bids
+    else performTrades tempOB bids
   where
     tempOB = addBid oB bid
 
@@ -123,7 +124,7 @@ addBid (OrderBook (buyOrders, sellOrders)) bid = case bid of
 
 -- | delete old bid from heap and insert new
 reNewOrder :: Ord a => SkewHeap a -> a -> a -> SkewHeap a
-reNewOrder sh oBid nBid = insert nBid (delete oBid sh) 
+reNewOrder sh oBid nBid = insert nBid (delete oBid sh)
 
 -- | checks if trade the highest priority bids match and a trade should be performed,
 -- returns true if trade should be performed, otherwise false
@@ -135,10 +136,18 @@ orderCheck (OrderBook (buys, sells)) =
     sRoot = rootOf sells
     bothHaveVaues = isJust bRoot && isJust sRoot
 
+-- | performs the trade and prints details
+-- 
+-- precondition: the root values of the two priority-heaps contain the orders to be traded
 doTrade :: OrderBook -> IO OrderBook
 doTrade oB@(OrderBook (buys, sells)) = do
-  print oB
+  print $  tradeMessage buyingOrder sellingOrder
   return (OrderBook (delete buyingOrder buys, delete sellingOrder sells))
   where
-    buyingOrder@(BuyOrder buyer buyingprice) = fromJust $ rootOf buys
-    sellingOrder@(SellOrder seller sellingprice) = fromJust $ rootOf sells
+    buyingOrder@(BuyOrder buyer boughtprice) = fromJust $ rootOf buys
+    sellingOrder@(SellOrder seller soldprice) = fromJust $ rootOf sells
+
+-- | returns the string message of who bought from who at what price
+tradeMessage :: BuyOrder -> SellOrder -> String
+tradeMessage (BuyOrder buyer boughtprice) (SellOrder seller soldgprice)
+  = buyer ++ " buys from " ++ seller ++ " for " ++ show boughtprice

@@ -3,6 +3,7 @@ module PriorityQueue.PrioSkew
     insert,
     SkewHeap,
     rootOf,
+    emptySkewHeap,
     {- merge, -}
   ) -- TODO: Add documentation and write down time complexity in big-O
 where
@@ -16,6 +17,11 @@ data SkewHeap a
   | Node (SkewHeap a) a (SkewHeap a)
   deriving (Show)
 
+skewLeaf :: Ord a => a -> SkewHeap a
+skewLeaf x = Node Empty x Empty
+
+emptySkewHeap :: Ord a => SkewHeap a
+emptySkewHeap = Empty
 
 -- dummy test data
 test1, test2 :: SkewHeap Integer
