@@ -17,7 +17,7 @@ type Person = String
 type Price = Integer
 
 -- | Buy and sell bids
-data BuyOrder = BuyOrder Person Price deriving (Show)
+data BuyOrder = BuyOrder Person Price
 
 instance Eq BuyOrder where
   (BuyOrder name1 price1) == (BuyOrder name2 price2) = name1 == name2 && price1 == price2
@@ -25,16 +25,26 @@ instance Eq BuyOrder where
 instance Ord BuyOrder where
   compare (BuyOrder _ price1) (BuyOrder _ price2) = compare price1 price2
 
+instance Show BuyOrder where
+  showsPrec = undefined
+  showList = undefined
+  show (BuyOrder b p) = b ++ " " ++ show p
+
 buyingPrice :: BuyOrder -> Price
 buyingPrice (BuyOrder _ p) = p
 
-data SellOrder = SellOrder Person Price deriving (Show)
+data SellOrder = SellOrder Person Price
 
 instance Eq SellOrder where
   (SellOrder name1 price1) == (SellOrder name2 price2) = name1 == name2 && price1 == price2
 
 instance Ord SellOrder where
   compare (SellOrder _ price1) (SellOrder _ price2) = compare price2 price1
+
+instance Show SellOrder where
+  showsPrec = undefined
+  showList = undefined
+  show (SellOrder b p) = b ++ " " ++ show p
 
 sellingPrice :: SellOrder -> Price
 sellingPrice (SellOrder _ p) = p
@@ -150,4 +160,4 @@ doTrade oB@(OrderBook (buys, sells)) = do
 -- | returns the string message of who bought from who at what price
 tradeMessage :: BuyOrder -> SellOrder -> String
 tradeMessage (BuyOrder buyer boughtprice) (SellOrder seller soldgprice)
-  = buyer ++ " buys from " ++ seller ++ " for " ++ show boughtprice
+  = buyer ++ " buys from " ++ seller ++ " for " ++ show boughtprice ++ "kr."

@@ -15,7 +15,18 @@ import Data.Maybe (isJust, fromJust, isNothing)
 data SkewHeap a
   = Empty
   | Node (SkewHeap a) a (SkewHeap a)
-  deriving (Show)
+
+instance Show a => Show (SkewHeap a) where
+  showsPrec = undefined
+  showList = undefined
+  show Empty = ""
+  show (Node Empty v Empty) = show v
+  show (Node l v Empty) = show v ++ ", " ++ show l
+  show (Node Empty v r) = show v ++ ", " ++ show r
+  show (Node l v r) = show v ++ ", " ++ show l ++ ", " ++ show r
+
+
+
 
 skewLeaf :: Ord a => a -> SkewHeap a
 skewLeaf x = Node Empty x Empty
@@ -33,6 +44,7 @@ test2 = Node Empty 6 (Node (Node Empty 4 Empty) 5 (Node Empty 4 Empty))
 -- amortised O(log n)
 merge :: Ord a => SkewHeap a -> SkewHeap a -> SkewHeap a
 merge Empty t = t
+merge t Empty = t
 merge t1@(Node l1 v1 r1) t2@(Node l2 v2 r2)
   | v1 > v2 = swapSubtrees $ Node l1 v1 (merge r1 t2)
   | otherwise = swapSubtrees $ Node l2 v2 (merge r2 t1)
