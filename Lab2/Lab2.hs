@@ -104,21 +104,16 @@ performTrade oB (bid : bids) = do
   where
     tempOB = addBid oB bid
 
-{- addBids :: OrderBook -> [Bid] -> OrderBook
-addBids = undefined  foldl addAndUpdate -- I frogor this deosnt work with printing / IO
-  where
-    addAndUpdate :: OrderBook -> Bid -> OrderBook
-    addAndUpdate ob b = orderCheck $ addBid ob b -}
 
 -- please try to improve, this feels bad but I can't figure out anything better ;_;
 addBid :: OrderBook -> Bid -> OrderBook
 addBid (OrderBook (buyOrders, sellOrders)) bid = case bid of
   Buy person price ->
     let newBuyOrder = BuyOrder person price
-     in OrderBook (insert buyOrders newBuyOrder, sellOrders)
+     in OrderBook (insert newBuyOrder buyOrders, sellOrders)
   Sell person price ->
     let newSellOrder = SellOrder person price
-     in OrderBook (buyOrders, insert sellOrders newSellOrder)
+     in OrderBook (buyOrders, insert newSellOrder sellOrders)
   NewBuy person oldPrice newPrice ->
     let (oldBuy, newBuy) = (BuyOrder person oldPrice, BuyOrder person newPrice)
      in OrderBook (reNewOrder buyOrders oldBuy newBuy, sellOrders)
@@ -128,7 +123,7 @@ addBid (OrderBook (buyOrders, sellOrders)) bid = case bid of
 
 -- | delete old bid from heap and insert new
 reNewOrder :: Ord a => SkewHeap a -> a -> a -> SkewHeap a
-reNewOrder sh oBid = insert (delete oBid sh)
+reNewOrder sh oBid nBid = insert nBid (delete oBid sh) 
 
 -- | checks if trade the highest priority bids match and a trade should be performed,
 -- returns true if trade should be performed, otherwise false

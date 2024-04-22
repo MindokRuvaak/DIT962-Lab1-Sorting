@@ -7,13 +7,15 @@ module PriorityQueue.PrioSkew
   ) -- TODO: Add documentation and write down time complexity in big-O
 where
 
--- | this is a max heap
+import Test.QuickCheck
+import Data.Maybe (isJust, fromJust, isNothing)
+
+-- | this is a max heap (inverse heap) i.e. largest element in root
 data SkewHeap a
   = Empty
   | Node (SkewHeap a) a (SkewHeap a)
   deriving (Show)
 
-type Leaf = SkewHeap
 
 -- dummy test data
 test1, test2 :: SkewHeap Integer
@@ -43,8 +45,8 @@ delete toDelete (Node l v r)
 -- | inserts an element into the heap using the skew merge
 -- 
 -- O(Log n)
-insert :: Ord a => SkewHeap a -> a -> SkewHeap a
-insert tree toInsert = merge tree (Node Empty toInsert Empty)
+insert :: Ord a => a -> SkewHeap a -> SkewHeap a
+insert toInsert tree = merge tree (Node Empty toInsert Empty)
 
 -- | gets the root elements value
 -- 
@@ -52,3 +54,17 @@ insert tree toInsert = merge tree (Node Empty toInsert Empty)
 rootOf :: SkewHeap a -> Maybe a
 rootOf Empty = Nothing
 rootOf (Node _ v _) = Just v
+
+fromList :: Ord a => [a] -> SkewHeap a
+fromList = foldr insert Empty
+
+
+heapInvariant :: Ord a => SkewHeap a -> Bool
+heapInvariant Empty = True
+heapInvariant (Node l v r) = check v l && check v r && heapInvariant l && heapInvariant r
+  where
+    check val sh = isNothing (rootOf sh) || val >= fromJust (rootOf sh)
+
+
+prop_Heap :: Ord a => [a] -> Bool
+prop_Heap xs = heapInvariant (fromList xs)
