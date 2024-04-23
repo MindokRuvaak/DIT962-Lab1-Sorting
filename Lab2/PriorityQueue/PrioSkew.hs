@@ -54,6 +54,7 @@ delete :: Ord a => a -> SkewHeap a -> SkewHeap a
 delete toDelete Empty = Empty
 delete toDelete (Node l v r)
   | v == toDelete = merge l r
+  | v < toDelete = Node l v r
   | otherwise = Node (delete toDelete l) v (delete toDelete r)
 
 -- | inserts an element into the heap using the skew merge
