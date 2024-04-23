@@ -49,7 +49,7 @@ merge t1@(Node l1 v1 r1) t2@(Node l2 v2 r2)
 
 -- | removes an arbitrary (provided) element
 -- 
--- O(n log n)
+-- O(n)
 delete :: Ord a => a -> SkewHeap a -> SkewHeap a
 delete toDelete Empty = Empty
 delete toDelete (Node l v r)
