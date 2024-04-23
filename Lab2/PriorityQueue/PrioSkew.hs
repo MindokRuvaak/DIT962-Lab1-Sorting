@@ -16,16 +16,12 @@ data SkewHeap a
   = Empty
   | Node (SkewHeap a) a (SkewHeap a)
 
-instance Show a => Show (SkewHeap a) where
+instance (Ord a, Show a) => Show (SkewHeap a) where
   showsPrec = undefined
   showList = undefined
   show Empty = ""
   show (Node Empty v Empty) = show v
-  show (Node l v Empty) = show v ++ ", " ++ show l
-  show (Node Empty v r) = show v ++ ", " ++ show r
-  show (Node l v r) = show v ++ ", " ++ show l ++ ", " ++ show r
-
-
+  show sh@(Node l v r) = show v ++ ", " ++ show (delete v sh)
 
 
 skewLeaf :: Ord a => a -> SkewHeap a
@@ -51,7 +47,7 @@ merge t1@(Node l1 v1 r1) t2@(Node l2 v2 r2)
   where
     swapSubtrees (Node l v r) = Node r v l
 
--- | removes an arbitrary element element
+-- | removes an arbitrary (provided) element
 -- 
 -- O(n log n)
 delete :: Ord a => a -> SkewHeap a -> SkewHeap a
@@ -76,6 +72,8 @@ rootOf (Node _ v _) = Just v
 fromList :: Ord a => [a] -> SkewHeap a
 fromList = foldr insert Empty
 
+-- toList :: Ord a => SkewHeap a -> [a]
+-- toList sh = 
 
 heapInvariant :: Ord a => SkewHeap a -> Bool
 heapInvariant Empty = True
