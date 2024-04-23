@@ -32,3 +32,8 @@ bin/
 
 ## Temp .md for plannig changes on individual banches ##
 temp.md
+
+## Compiled shit ##
+**/*.exe
+**/*.hi
+**/*.o
