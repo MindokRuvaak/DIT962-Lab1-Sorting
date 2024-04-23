@@ -42,10 +42,8 @@ merge :: Ord a => SkewHeap a -> SkewHeap a -> SkewHeap a
 merge Empty t = t
 merge t Empty = t
 merge t1@(Node l1 v1 r1) t2@(Node l2 v2 r2)
-  | v1 > v2 = swapSubtrees $ Node l1 v1 (merge r1 t2)
-  | otherwise = swapSubtrees $ Node l2 v2 (merge r2 t1)
-  where
-    swapSubtrees (Node l v r) = Node r v l
+  | v1 > v2 = Node (merge r1 t2) v1 l1
+  | otherwise = Node (merge r2 t1) v2 l2
 
 -- | removes an arbitrary (provided) element
 -- 
