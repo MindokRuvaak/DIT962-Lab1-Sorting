@@ -155,8 +155,8 @@ doTrade oB@(OrderBook (buys, sells)) = do
   print $  tradeMessage buyingOrder sellingOrder
   return (OrderBook (delete buyingOrder buys, delete sellingOrder sells))
   where
-    buyingOrder@(BuyOrder buyer boughtprice) = fromJust $ rootOf buys
-    sellingOrder@(SellOrder seller soldprice) = fromJust $ rootOf sells
+    buyingOrder = fromJust $ rootOf buys
+    sellingOrder = fromJust $ rootOf sells
 
 -- | returns the string message of who bought from who at what price
 tradeMessage :: BuyOrder -> SellOrder -> String
