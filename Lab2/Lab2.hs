@@ -98,11 +98,6 @@ main = do
 trade :: [Bid] -> IO ()
 trade = performTrades (OrderBook (emptySkewHeap, emptySkewHeap)) 
 
-newtype OrderBook = OrderBook (SkewHeap BuyOrder, SkewHeap SellOrder)
-
-instance Show OrderBook where
-  show (OrderBook (b, s)) = "Order book:\n" ++ "Sellers: " ++ show s ++ "\n" ++ "Buyers: " ++ show b ++ "\n"
-
 -- | the algoithm for trading given the list of bids
 performTrades :: OrderBook -> [Bid] -> IO ()
 performTrades oB [] = print oB
@@ -114,6 +109,12 @@ performTrades oB (bid : bids) = do
     else performTrades tempOB bids
   where
     tempOB = addBid oB bid
+
+
+newtype OrderBook = OrderBook (SkewHeap BuyOrder, SkewHeap SellOrder)
+
+instance Show OrderBook where
+  show (OrderBook (b, s)) = "Order book:\n" ++ "Sellers: " ++ show s ++ "\n" ++ "Buyers: " ++ show b ++ "\n"
 
 
 -- please try to improve, this feels bad but I can't figure out anything better ;_;
@@ -159,5 +160,5 @@ doTrade oB@(OrderBook (buys, sells)) = do
 
 -- | returns the string message of who bought from who at what price
 tradeMessage :: BuyOrder -> SellOrder -> String
-tradeMessage (BuyOrder buyer boughtprice) (SellOrder seller soldgprice)
+tradeMessage (BuyOrder buyer boughtprice) (SellOrder seller _)
   = buyer ++ " buys from " ++ seller ++ " for " ++ show boughtprice ++ "kr."

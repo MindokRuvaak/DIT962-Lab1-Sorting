@@ -5,7 +5,7 @@ module PriorityQueue.PrioSkew
     rootOf,
     emptySkewHeap,
     {- merge, -}
-  ) -- TODO: Add documentation and write down time complexity in big-O
+  )
 where
 
 import Test.QuickCheck
