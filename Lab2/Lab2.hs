@@ -152,11 +152,8 @@ orderCheck (OrderBook (buys, sells)) =
 -- precondition: the root values of the two priority-heaps contain the orders to be traded
 doTrade :: OrderBook -> IO OrderBook
 doTrade oB@(OrderBook (buys, sells)) = do
-  print $  tradeMessage buyingOrder sellingOrder
-  return (OrderBook (delete buyingOrder buys, delete sellingOrder sells))
-  where
-    buyingOrder = fromJust $ rootOf buys
-    sellingOrder = fromJust $ rootOf sells
+  print $  tradeMessage (fromJust $ rootOf buys) (fromJust $ rootOf sells)
+  return (OrderBook (removeRoot buys, removeRoot sells))
 
 -- | returns the string message of who bought from who at what price
 tradeMessage :: BuyOrder -> SellOrder -> String
