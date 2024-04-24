@@ -34,7 +34,7 @@ bin/
 temp.md
 
 ## Compiled shit ##
-*.hi
-*.o
-*.exe
-/Lab2/Lab2
+**/*.hi
+**/*.o
+**/*.exe
+Lab2/Lab2
