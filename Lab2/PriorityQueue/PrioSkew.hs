@@ -4,6 +4,7 @@ module PriorityQueue.PrioSkew
     SkewHeap,
     rootOf,
     emptySkewHeap,
+    removeRoot,
     {- merge, -}
   )
 where
@@ -55,6 +56,14 @@ delete toDelete (Node l v r)
   | v < toDelete = Node l v r
   | otherwise = Node (delete toDelete l) v (delete toDelete r)
 
+-- | removes the root element (max)
+-- 
+-- O(log n)
+removeRoot :: Ord a => SkewHeap a -> SkewHeap a
+removeRoot Empty = Empty
+removeRoot (Node l _ r) = merge l r
+
+
 -- | inserts an element into the heap using the skew merge
 -- 
 -- O(Log n)
@@ -71,8 +80,6 @@ rootOf (Node _ v _) = Just v
 fromList :: Ord a => [a] -> SkewHeap a
 fromList = foldr insert Empty
 
--- toList :: Ord a => SkewHeap a -> [a]
--- toList sh = 
 
 heapInvariant :: Ord a => SkewHeap a -> Bool
 heapInvariant Empty = True
