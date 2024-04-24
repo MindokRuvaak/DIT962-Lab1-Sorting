@@ -37,3 +37,5 @@ temp.md
 /Lab2/*
 !/Lab2/*.hs
 !/Lab2/*.jar
+/Lab2/PriorityQueue/*
+!/Lab2/PriorityQueue/*.hs
