@@ -34,6 +34,6 @@ bin/
 temp.md
 
 ## Compiled shit ##
-**/*.exe
-**/*.hi
-**/*.o
+/Lab2/*
+!/Lab2/*.hs
+!/Lab2/*.jar
