@@ -67,13 +67,13 @@ insert :: Ord a => a -> AATree a -> AATree a
 insert toInsert = split . skew . insert' toInsert
   where
     -- if there is no tree then make one
-    insert' _ Empty = leaf toInsert
+    insert' val Empty = leaf val
     -- insert the value as normal into a BST-tree
     insert' val (Node k l v r) = case compare val v of
       LT -> insert val l
       GT -> insert val r
       -- if value is already present do nothing
-      EQ -> Node k l val r
+      EQ -> Node k l v r
 
 
 inorder :: AATree a -> [a]
