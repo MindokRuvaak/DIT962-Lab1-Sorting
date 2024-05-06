@@ -87,6 +87,9 @@ heapInvariant (Node l v r) = check v l && check v r && heapInvariant l && heapIn
   where
     check val sh = isNothing (rootOf sh) || val >= fromJust (rootOf sh)
 
+size :: Ord a => SkewHeap a -> Integer
+size Empty = 0
+size (Node l v r) = 1 + size l + size r
 
 prop_Heap :: Ord a => [a] -> Bool
 prop_Heap xs = heapInvariant (fromList xs)
