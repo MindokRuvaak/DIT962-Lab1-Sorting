@@ -23,9 +23,11 @@ data AATree a
   | Node Level (AATree a) a (AATree a)
   deriving (Eq, Show, Read)
 
+-- return an empty tree
 emptyTree :: AATree a
 emptyTree = Empty
 
+-- return the value specific or Nothing if the value is not present
 get :: Ord a => a -> AATree a -> Maybe a
 get _ Empty = Nothing
 get toGet (Node _ l v r) = case compare toGet v of
@@ -35,15 +37,16 @@ get toGet (Node _ l v r) = case compare toGet v of
 
 -- You may find it helpful to define
 
---
+-- split any 4 nodes into 2 nodes again
 split :: AATree a -> AATree a
-split x@(Node xk a xv y@(Node yk b yv z)) =
+split x@(Node xk a xv y@(Node yk b yv z@(Node {}))) =
   if xk == yk && xk == level z
     then
       let newX = Node xk a xv b
        in Node (yk + 1) newX yv z
-    else x -- not a 4 node
+  else x -- not a 4 node
     -- if not a 4 node given, just return tree unchanged
+-- if we dont have at least 3 nodes we cant have a 4 node and we do nothing
 split tree = tree
 
 skew :: AATree a -> AATree a
