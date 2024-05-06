@@ -61,13 +61,18 @@ skew y@(Node yk x@(Node xk a xv b) yv c) =
 skew a = a
 
 -- and call these from insert.
+
+-- insert a value into the tree unless the value already exists
 insert :: Ord a => a -> AATree a -> AATree a
 insert toInsert = split . skew . insert' toInsert
   where
+    -- if there is no tree then make one
     insert' _ Empty = leaf toInsert
+    -- insert the value as normal into a BST-tree
     insert' val (Node k l v r) = case compare val v of
       LT -> insert val l
       GT -> insert val r
+      -- if value is already present do nothing
       EQ -> Node k l val r
 
 
