@@ -17,21 +17,49 @@ module AATree (
 --------------------------------------------------------------------------------
 
 -- AA search trees
-data AATree a = TODO
+data AATree a 
+  = Empty
+  | Node Level (AATree a) a (AATree a)
   deriving (Eq, Show, Read)
 
 emptyTree :: AATree a
-emptyTree = error "emptyTree not implemented"
+emptyTree = Empty
 
 get :: Ord a => a -> AATree a -> Maybe a
-get = error "get not implemented"
+get _ Empty  = Nothing
+get toGet (Node _ l v r) = case compare toGet v of
+  LT -> get toGet l
+  GT -> get toGet r
+  EQ -> Just v
+
 
 -- You may find it helpful to define
---   split :: AATree a -> AATree a
---   skew  :: AATree a -> AATree a
+
+--
+split :: AATree a -> AATree a
+split x@(Node xk a xv y@(Node yk b yv z)) 
+  = if xk == yk && xk == level z 
+    then let newX = Node xk a xv b in 
+      Node (yk+1) newX yv z
+    else x -- not a 4 node
+-- if not a 4 node given, just return tree unchanged
+split tree = tree
+
+skew  :: AATree a -> AATree a
+-- if malformed 3-node
+skew y@(Node yk x@(Node xk a xv b) yv c) 
+  = if yk == xk 
+    then let newY = Node yk b yv c in 
+      Node xk a xv newY
+    else y
+-- a malformed 4-node will be caught by
+skew a = a
+
 -- and call these from insert.
 insert :: Ord a => a -> AATree a -> AATree a
-insert = error "insert not implemented"
+insert toInsert = split . skew . insert' toInsert
+  where 
+    insert' = undefined
 
 inorder :: AATree a -> [a]
 inorder = error "inorder not implemented"
@@ -47,6 +75,16 @@ height = error "height not implemented"
 
 remove :: Ord a => a -> AATree a -> AATree a
 remove = error "remove not implemented"
+--------------------------------------------------------------------------------
+
+type Level = Int
+
+level :: AATree a -> Level
+level Empty          = 0
+level (Node k _ _ _) = k
+
+singleton :: a -> AATree a
+singleton v = Node 1 Empty v Empty
 
 --------------------------------------------------------------------------------
 -- Check that an AA tree is ordered and obeys the AA invariants
