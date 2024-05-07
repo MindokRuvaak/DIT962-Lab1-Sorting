@@ -84,7 +84,7 @@ insert toInsert = split . skew . insert' toInsert
     -- insert the value as normal into a BST-tree
     insert' val (Node k l v r) = case compare val v of
       LT -> Node k (insert val l) v r
-      EQ -> Node k l val r
+      EQ -> Node k l v r
       GT -> Node k l v (insert val r)
 
 -- | increasing order
