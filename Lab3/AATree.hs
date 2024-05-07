@@ -1,5 +1,6 @@
 {-# OPTIONS -Wall #-}
 {-# OPTIONS_GHC -Wno-unused-matches #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 --------------------------------------------------------------------------------
 
@@ -15,6 +16,7 @@ module AATree
     checkTree, -- Ord a => AATree a -> Bool
   )
 where
+import Test.QuickCheck
 
 --------------------------------------------------------------------------------
 
@@ -22,7 +24,17 @@ where
 data AATree a
   = Empty
   | Node Level (AATree a) a (AATree a)
-  deriving (Eq, Show, Read)
+  deriving (Eq, {- Show, -} Read)
+
+instance Show a =>  Show (AATree a) where
+  showsPrec = undefined
+  show Empty = "Empty-Tree"
+  show (Node k Empty v Empty) = "["++ show k ++":"++ show v++"]"
+  show (Node k l v Empty)     = "(" ++ show l ++ ")" ++ "_/" ++ "["++ show k ++":"++ show v ++"]"
+  show (Node k Empty v r)     = "["++ show k ++":"++ show v ++"]" ++ "\\_" ++ "(" ++ show r ++ ")"
+  show (Node k l v r)         = "(" ++ show l ++ ")" ++ "_/" ++ "["++ show k ++":"++ show v ++"]" ++ "\\_" ++ "(" ++ show r ++ ")"
+  showList = undefined
+
 
 -- return an empty tree
 emptyTree :: AATree a
@@ -80,7 +92,7 @@ inorder t = go t []
     go (Node _ l v r) acc = go l (v:go r acc)
 
 size :: AATree a -> Int
-size = error "size not implemented"
+size = length . inorder
 
 height :: AATree a -> Int
 height = level
@@ -107,6 +119,8 @@ level (Node k _ _ _) = k
 leaf :: a -> AATree a
 leaf v = Node 1 Empty v Empty
 
+fromList :: Ord a => [a] -> AATree a
+fromList = foldr insert Empty
 --------------------------------------------------------------------------------
 -- Check that an AA tree is ordered and obeys the AA invariants
 
@@ -170,3 +184,6 @@ rightSub (Node _ _ _ r) = r
 rightSub Empty          = Empty
 
 --------------------------------------------------------------------------------
+
+prop_AATree :: Ord a => [a] -> Bool
+prop_AATree = checkTree . fromList
