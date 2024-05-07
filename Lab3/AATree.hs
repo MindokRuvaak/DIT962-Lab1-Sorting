@@ -1,4 +1,6 @@
 {-# OPTIONS -Wall #-}
+{-# OPTIONS_GHC -Wno-unused-matches #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 --------------------------------------------------------------------------------
 
@@ -14,6 +16,7 @@ module AATree
     checkTree, -- Ord a => AATree a -> Bool
   )
 where
+import Test.QuickCheck
 
 --------------------------------------------------------------------------------
 
@@ -21,7 +24,17 @@ where
 data AATree a
   = Empty
   | Node Level (AATree a) a (AATree a)
-  deriving (Eq, Show, Read)
+  deriving (Eq, {- Show, -} Read)
+
+instance Show a =>  Show (AATree a) where
+  showsPrec = undefined
+  show Empty = "Empty-Tree"
+  show (Node k Empty v Empty) = "["++ show k ++":"++ show v++"]"
+  show (Node k l v Empty)     = "(" ++ show l ++ ")" ++ "_/" ++ "["++ show k ++":"++ show v ++"]"
+  show (Node k Empty v r)     = "["++ show k ++":"++ show v ++"]" ++ "\\_" ++ "(" ++ show r ++ ")"
+  show (Node k l v r)         = "(" ++ show l ++ ")" ++ "_/" ++ "["++ show k ++":"++ show v ++"]" ++ "\\_" ++ "(" ++ show r ++ ")"
+  showList = undefined
+
 
 -- return an empty tree
 emptyTree :: AATree a
@@ -70,17 +83,20 @@ insert toInsert = split . skew . insert' toInsert
     insert' val Empty = leaf val
     -- insert the value as normal into a BST-tree
     insert' val (Node k l v r) = case compare val v of
-      LT -> insert val l
-      GT -> insert val r
-      -- if value is already present do nothing
-      EQ -> Node k l v r
+      LT -> Node k (insert val l) v r
+      EQ -> Node k l val r
+      GT -> Node k l v (insert val r)
 
-
+-- | increasing order
 inorder :: AATree a -> [a]
-inorder = error "inorder not implemented"
+inorder Empty = []
+inorder t = go t []
+  where
+    go Empty acc = acc
+    go (Node _ l v r) acc = go l (v:go r acc)
 
 size :: AATree a -> Int
-size = error "size not implemented"
+size = length . inorder
 
 height :: AATree a -> Int
 height = level
@@ -107,6 +123,8 @@ level (Node k _ _ _) = k
 leaf :: a -> AATree a
 leaf v = Node 1 Empty v Empty
 
+fromList :: Ord a => [a] -> AATree a
+fromList = foldr insert Empty
 --------------------------------------------------------------------------------
 -- Check that an AA tree is ordered and obeys the AA invariants
 
@@ -121,7 +139,11 @@ checkTree root =
 
 -- True if the given list is ordered
 isSorted :: Ord a => [a] -> Bool
-isSorted = error "isSorted not implemented"
+isSorted list = go list True
+  where
+    go []        b = b
+    go [x]       b = b
+    go (x:y:lst) b = (x < y) && b && go (y:lst) b
 
 -- Check if the invariant is true for a single AA node
 -- You may want to write this as a conjunction e.g.
@@ -131,15 +153,41 @@ isSorted = error "isSorted not implemented"
 --     rightGrandchildOK node
 -- where each conjunct checks one aspect of the invariant
 checkLevels :: AATree a -> Bool
-checkLevels = error "checkLevels not implemented"
+checkLevels node =
+  leftChildOK node &&
+  rightChildOK node &&
+  rightRightGrandchildOK node
+
+leftChildOK :: AATree a -> Bool
+leftChildOK node = level node - level (leftSub node) == 1
+-- leftChildOK Empty = True
+-- leftChildOK (Node k l _ _) = k - level l == 1
+
+
+rightChildOK :: AATree a -> Bool
+rightChildOK node = (level node - level (rightSub node)) `elem` [0,1]
+-- rightChildOK Empty = True
+-- rightChildOK (Node k _ _ r) = k - level r == 0 || k - level r == 1
+
+rightRightGrandchildOK :: AATree a -> Bool
+rightRightGrandchildOK node = level node > level (rightSub $ rightSub node)
+-- rightRightGrandchildOK Empty = True
+-- rightRightGrandchildOK (Node k _ _ Empty) = True
+-- rightRightGrandchildOK (Node k _ _ (Node _ _ _ rr)) = k > level rr
 
 isEmpty :: AATree a -> Bool
-isEmpty = error "isEmpty not implemented"
+isEmpty Empty = True
+isEmpty _     = False
 
 leftSub :: AATree a -> AATree a
-leftSub = error "leftSub not implemented"
+leftSub (Node _ l _ _) = l
+leftSub Empty          = Empty
 
 rightSub :: AATree a -> AATree a
-rightSub = error "rightSub not implemented"
+rightSub (Node _ _ _ r) = r
+rightSub Empty          = Empty
 
 --------------------------------------------------------------------------------
+
+prop_AATree :: Ord a => [a] -> Bool
+prop_AATree = checkTree . fromList
