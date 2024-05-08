@@ -139,11 +139,9 @@ checkTree root =
 
 -- True if the given list is ordered
 isSorted :: Ord a => [a] -> Bool
-isSorted list = go list True
-  where
-    go []        b = b
-    go [x]       b = b
-    go (x:y:lst) b = (x < y) && b && go (y:lst) b
+isSorted []   = True
+isSorted [x]  = True
+isSorted (x:y:ys) = (x <= y) && isSorted (y:ys)
 
 -- Check if the invariant is true for a single AA node
 -- You may want to write this as a conjunction e.g.
