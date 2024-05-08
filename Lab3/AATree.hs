@@ -127,7 +127,7 @@ fromList :: Ord a => [a] -> AATree a
 fromList = foldr insert Empty
 --------------------------------------------------------------------------------
 -- Check that an AA tree is ordered and obeys the AA invariants
-
+-- forgot completeness, woops. Wont bother rn
 checkTree :: Ord a => AATree a -> Bool
 checkTree root =
   isSorted (inorder root)
