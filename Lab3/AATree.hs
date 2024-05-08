@@ -16,7 +16,7 @@ module AATree
     checkTree, -- Ord a => AATree a -> Bool
   )
 where
-import Test.QuickCheck
+import Test.QuickCheck ()
 
 --------------------------------------------------------------------------------
 
@@ -133,6 +133,7 @@ checkTree root =
   isSorted (inorder root)
     && all checkLevels (nodes root)
   where
+    nodes :: Ord a => AATree a -> [AATree a] 
     nodes x
       | isEmpty x = []
       | otherwise = x : nodes (leftSub x) ++ nodes (rightSub x)
