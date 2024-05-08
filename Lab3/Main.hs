@@ -13,14 +13,20 @@ import AATree
 main :: IO ()
 main = do
   contents <- getContents
-  print contents
+  -- print contents
   -- split the data into words and build an AA tree
   -- use foldl
   let tree = foldl (flip insert) emptyTree (words contents)
-  print tree
+  -- print tree
   -- calculate and print statistics
   -- use fromIntegral/ceiling/logBase
-  undefined
+  let optimalHeight = ceiling (logBase 2 (fromIntegral (length (words contents) + 1))) - 1
+  print $ "Size: " ++ show (size tree) 
+    ++ "\nHeight: " ++ show (height tree) 
+    ++ "\nOptimal Height: " ++ show optimalHeight
+    ++ "\nHeight / Optimum height: " ++ show (fromIntegral (height tree) / fromIntegral optimalHeight)
+    ++ "\n checkTree: " ++ show (checkTree tree)
+    ++ "\n First 20 words: " ++ show (take 20 (inorder tree))
+
 
 --------------------------------------------------------------------------------
-
