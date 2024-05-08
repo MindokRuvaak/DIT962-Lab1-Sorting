@@ -21,12 +21,12 @@ main = do
   -- calculate and print statistics
   -- use fromIntegral/ceiling/logBase
   let optimalHeight = ceiling (logBase 2 (fromIntegral (length (words contents) + 1))) - 1
-  print $ "Size: " ++ show (size tree) 
+  putStrLn $ "Size: " ++ show (size tree) 
     ++ "\nHeight: " ++ show (height tree) 
     ++ "\nOptimal Height: " ++ show optimalHeight
     ++ "\nHeight / Optimum height: " ++ show (fromIntegral (height tree) / fromIntegral optimalHeight)
-    ++ "\n checkTree: " ++ show (checkTree tree)
-    ++ "\n First 20 words: " ++ show (take 20 (inorder tree))
+    ++ "\ncheckTree: " ++ show (checkTree tree)
+    ++ "\nFirst 20 words: " ++ show (take 20 (inorder tree))
 
 
 --------------------------------------------------------------------------------
