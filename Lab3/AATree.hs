@@ -87,7 +87,7 @@ insert toInsert = split . skew . insert' toInsert
       EQ -> Node k l v r
       GT -> Node k l v (insert val r)
 
--- | increasing order
+-- gives all elements in a tree as a list in increasing order
 inorder :: AATree a -> [a]
 inorder Empty = []
 inorder t = go t []
@@ -95,16 +95,17 @@ inorder t = go t []
     go Empty acc = acc
     go (Node _ l v r) acc = go l (v:go r acc)
 
+-- gives the number of elements in a tree
 size :: AATree a -> Int
 size = length . inorder
 
+-- gives the height of the tree (as seen as a binary tree)
 height :: AATree a -> Int
 height Empty = 0
 height (Node _ l _ r) = max (height l + 1) (height r + 1)
 
 --------------------------------------------------------------------------------
 -- Optional function
-
 remove :: Ord a => a -> AATree a -> AATree a
 remove _ Empty = Empty
 remove toRemove t@(Node k l v r) = case compare toRemove v of
@@ -117,18 +118,20 @@ remove toRemove t@(Node k l v r) = case compare toRemove v of
 -- other help functions
 type Level = Int
 
+-- gives the level of a node
 level :: AATree a -> Level
 level Empty = 0
 level (Node k _ _ _) = k
 
+-- created a tree with only one node
 leaf :: a -> AATree a
 leaf v = Node 1 Empty v Empty
 
+-- creates a tree given a list of elements that can be ordered
 fromList :: Ord a => [a] -> AATree a
 fromList = foldr insert Empty
---------------------------------------------------------------------------------
+--------------------------------------------------------------  ------------------
 -- Check that an AA tree is ordered and obeys the AA invariants
--- forgot completeness, woops. Wont bother rn
 checkTree :: Ord a => AATree a -> Bool
 checkTree root =
   isSorted (inorder root)
@@ -146,48 +149,48 @@ isSorted [x]  = True
 isSorted (x:y:ys) = (x <= y) && isSorted (y:ys)
 
 -- Check if the invariant is true for a single AA node
--- You may want to write this as a conjunction e.g.
---   checkLevels node =
---     leftChildOK node &&
---     rightChildOK node &&
---     rightGrandchildOK node
--- where each conjunct checks one aspect of the invariant
 checkLevels :: AATree a -> Bool
 checkLevels node =
   leftChildOK node &&
   rightChildOK node &&
   rightRightGrandchildOK node
 
+-- checks if the left node is less than the parent node
 leftChildOK :: AATree a -> Bool
 leftChildOK node = level node - level (leftSub node) == 1
 -- leftChildOK Empty = True
 -- leftChildOK (Node k l _ _) = k - level l == 1
 
-
+-- checks if the right child nodes level is one less than (2 node) or equal to (3 node) the given node
 rightChildOK :: AATree a -> Bool
 rightChildOK node = (level node - level (rightSub node)) `elem` [0,1]
 -- rightChildOK Empty = True
 -- rightChildOK (Node k _ _ r) = k - level r == 0 || k - level r == 1
 
+-- checks if the right child node is greater than the given node (or else it would be a 4 node)
 rightRightGrandchildOK :: AATree a -> Bool
 rightRightGrandchildOK node = level node > level (rightSub $ rightSub node)
 -- rightRightGrandchildOK Empty = True
 -- rightRightGrandchildOK (Node k _ _ Empty) = True
 -- rightRightGrandchildOK (Node k _ _ (Node _ _ _ rr)) = k > level rr
 
+-- returns true if a given tree is empty
 isEmpty :: AATree a -> Bool
 isEmpty Empty = True
 isEmpty _     = False
 
+-- returns the left subtree
 leftSub :: AATree a -> AATree a
 leftSub (Node _ l _ _) = l
 leftSub Empty          = Empty
 
+-- returns the right subtree
 rightSub :: AATree a -> AATree a
 rightSub (Node _ _ _ r) = r
 rightSub Empty          = Empty
 
 --------------------------------------------------------------------------------
 
+-- AATree quickcheck property using our invariant function
 prop_AATree :: Ord a => [a] -> Bool
 prop_AATree = checkTree . fromList
