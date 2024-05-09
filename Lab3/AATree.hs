@@ -36,11 +36,13 @@ instance Show a =>  Show (AATree a) where
   showList = undefined
 
 
--- return an empty tree
+-- | return an empty tree
+-- | O(1)
 emptyTree :: AATree a
 emptyTree = Empty
 
--- return the value specific or Nothing if the value is not present
+-- | return the value specified or Nothing if the value is not present
+-- | 
 get :: Ord a => a -> AATree a -> Maybe a
 get _ Empty = Nothing
 get toGet (Node _ l v r) = case compare toGet v of
