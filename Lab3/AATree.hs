@@ -81,6 +81,7 @@ skew a = a
 -- | insert a value into the tree unless the value already exists
 -- | O(log n)
 insert :: Ord a => a -> AATree a -> AATree a
+-- recursivley insert an element, skew it if it has a malformed node and split any 4-nodes
 insert toInsert = split . skew . insert' toInsert
   where
     -- if there is no tree then make one
