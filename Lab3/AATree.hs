@@ -100,7 +100,7 @@ size = length . inorder
 
 height :: AATree a -> Int
 height Empty = 0
-height (Node _ l _ r) = max (height l + 1) (height r + 1)
+height (Node _ l _ r) = 1 + max (height l) (height r)
 
 --------------------------------------------------------------------------------
 -- Optional function
