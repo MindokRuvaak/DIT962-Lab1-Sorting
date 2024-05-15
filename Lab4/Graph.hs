@@ -28,7 +28,7 @@ data Edge a b = Edge
 
 -- A graph with nodes of type a and labels of type b.
 -- TODO: implement a graph with adjacency lists, hint: use a Map.
-data Graph a b = Graph (Map a [Edge a b])
+data Graph a b = Graph (Map a [Edge a b]) deriving Show
 
 -- | Create an empty graph
 empty :: Graph a b
@@ -47,9 +47,16 @@ addVertices vs g = foldr addVertex g vs
 -- the second parameter the destination vertex, and the third parameter is the
 -- label (of type b)
 addEdge :: Ord a => a -> a -> b -> Graph a b -> Graph a b
-addEdge v w l (Graph m)
+addEdge v w l g@(Graph m)
+  -- you need both the start and end node to exist to have a valid edge
   | isNothing (M.lookup v m) || isNothing (M.lookup w m) = error "vertex does not exist"
-  | otherwise = undefined
+  -- replace the old key value pair with the updated one
+  -- TODO: we would like some way to compare edges (Eq instance) so we can make
+  -- sure we dont have duplicate edges here
+  | otherwise = Graph (M.insert v (e:es) m)
+    where
+      e = Edge v w l
+      es = fromJust (M.lookup v m)
 
 -- | Add an edge from start to destination, but also from destination to start,
 -- with the same label.
