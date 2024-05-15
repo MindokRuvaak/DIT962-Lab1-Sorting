@@ -67,6 +67,7 @@ addBiEdge v w l = addEdge v w l . addEdge w v l
 adj :: Ord a => a -> Graph a b -> [Edge a b]
 adj v g = fromJust (M.lookup v (kvmap g))
 
+
 -- | Get all vertices (nodes) in a graph
 vertices :: Graph a b -> [a]
 vertices g = M.keys $ kvmap g 
