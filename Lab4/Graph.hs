@@ -64,9 +64,9 @@ addEdge v w l g
 addBiEdge :: Ord a => a -> a -> b -> Graph a b -> Graph a b
 addBiEdge v w l = addEdge v w l . addEdge w v l
 
--- | Get all adjacent vertices (nodes) for a given node
+-- | Get all adjacent Nodes for a given Nodes given as a list of its outgoing edges
 adj :: Ord a => a -> Graph a b -> [Edge a b]
-adj v g = M.lookup v 
+adj v g = fromJust (M.lookup v (edgeMap g))
 
 -- | Get all vertices (nodes) in a graph
 vertices :: Graph a b -> [a]
