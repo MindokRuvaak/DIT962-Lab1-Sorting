@@ -102,7 +102,7 @@ inorder t = go t []
     go (Node _ l v r) acc = go l (v:go r acc)
 
 -- | gives the number of elements in a tree
--- | O(n²)
+-- | O(n)
 size :: AATree a -> Int
 size = length . inorder
 
