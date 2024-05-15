@@ -25,25 +25,30 @@ data Edge a b = Edge
   } deriving Show
 
 -- A graph with nodes of type a and labels of type b.
-data Graph a b = Graph -- TODO: implement a graph with adjacency lists, hint: use a Map.
+-- TODO: implement a graph with adjacency lists, hint: use a Map.
+data Graph a b = Empty | Graph (Map a [Edge a b]) deriving Show
 
 -- | Create an empty graph
 empty :: Graph a b
-empty = undefined
+empty = Empty
 
 -- | Add a vertex (node) to a graph
 addVertex :: Ord a => a -> Graph a b -> Graph a b
-addVertex v g = undefined
+addVertex v g = Graph (M.insert v [] (case g of
+                                      Empty   -> M.empty
+                                      Graph m -> m))
 
 -- | Add a list of vertices to a graph
 addVertices :: Ord a => [a] -> Graph a b -> Graph a b
-addVertices vs g = undefined
+addVertices vs g = foldr addVertex g vs
 
 -- | Add an edge to a graph, the first parameter is the start vertex (of type a), 
 -- the second parameter the destination vertex, and the third parameter is the
 -- label (of type b)
 addEdge :: Ord a => a -> a -> b -> Graph a b -> Graph a b
-addEdge v w l = undefined
+addEdge v w l  = undefined
+  where
+    e = Edge v w l
 
 -- | Add an edge from start to destination, but also from destination to start,
 -- with the same label.
