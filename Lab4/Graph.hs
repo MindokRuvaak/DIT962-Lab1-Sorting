@@ -1,4 +1,6 @@
-module Graph 
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
+module Graph
   ( -- * Edge
     Edge                    -- type
   , src, dst, label         -- querying an Edge
@@ -26,16 +28,15 @@ data Edge a b = Edge
 
 -- A graph with nodes of type a and labels of type b.
 -- TODO: implement a graph with adjacency lists, hint: use a Map.
-data Graph a b = Empty | Graph (Map a [Edge a b]) deriving Show
+data Graph a b = Graph (Map a [Edge a b])
 
 -- | Create an empty graph
 empty :: Graph a b
-empty = Empty
+empty = Graph M.empty
 
 -- | Add a vertex (node) to a graph
 addVertex :: Ord a => a -> Graph a b -> Graph a b
 addVertex v g = Graph (M.insert v [] (case g of
-                                      Empty   -> M.empty
                                       Graph m -> m))
 
 -- | Add a list of vertices to a graph
@@ -46,9 +47,9 @@ addVertices vs g = foldr addVertex g vs
 -- the second parameter the destination vertex, and the third parameter is the
 -- label (of type b)
 addEdge :: Ord a => a -> a -> b -> Graph a b -> Graph a b
-addEdge v w l  = undefined
-  where
-    e = Edge v w l
+addEdge v w l (Graph m)
+  | isNothing (M.lookup v m) || isNothing (M.lookup w m) = error "vertex does not exist"
+  | otherwise = undefined
 
 -- | Add an edge from start to destination, but also from destination to start,
 -- with the same label.
