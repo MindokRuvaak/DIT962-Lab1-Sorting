@@ -18,13 +18,19 @@ main = do
   -- split the data into words and build an AA tree
   let tree = foldl (flip insert) emptyTree (words contents)
   -- print tree -- debug print
-  
+
   -- calculate and print statistics
-  let optimalHeight = ceiling (logBase 2 (fromIntegral (length (words contents) + 1))) - 1
-  putStrLn $ "Size: " ++ show (size tree) 
-    ++ "\nHeight: " ++ show (height tree) 
+  let
+    optimalHeight :: Integer
+    optimalHeight = 
+        ceiling (logBase 2 (fromIntegral
+        (length (words contents) + 1)) :: Double ) - 1
+
+  putStrLn $ "Size: " ++ show (size tree)
+    ++ "\nHeight: " ++ show (height tree)
     ++ "\nOptimal Height: " ++ show optimalHeight
-    ++ "\nHeight / Optimum height: " ++ show (fromIntegral (height tree) / fromIntegral optimalHeight)
+    ++ "\nHeight / Optimum height: "
+    ++ show ((fromIntegral (height tree) / fromIntegral optimalHeight) :: Double) 
     ++ "\ncheckTree: " ++ show (checkTree tree)
     ++ "\nFirst 20 words: " ++ show (take 20 (inorder tree))
 

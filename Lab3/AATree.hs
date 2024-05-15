@@ -63,7 +63,6 @@ split x@(Node xk a xv y@(Node yk b yv z@(Node {}))) =
 -- if we dont have at least 3 nodes we cant have a 4 node and we do nothing
 split tree = tree
 
-
 -- | preform a skew on a trees root node
 -- | O(1)
 skew :: AATree a -> AATree a
