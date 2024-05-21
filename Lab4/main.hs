@@ -65,7 +65,6 @@ dijkstra g s q
 toDijk :: (Num b) => b -> Edge a b -> Dijk a b
 toDijk d e = Dijk (dst e) (d + label e) (src e)
 
-
 main :: IO ()
 main = undefined  -- TODO: read arguments, build graph, output shortest path
 
