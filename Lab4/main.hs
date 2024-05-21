@@ -72,5 +72,8 @@ startGUI :: IO ()
 startGUI = do
   Right stops <- readStops "data/stops-gbg.txt"
   Right lines <- readLines "data/lines-gbg.txt"
-  let graph = undefined -- TODO: build your graph here using stops and lines
+  let nodeGraph = foldr (addVertex . name) Graph.empty stops
+  let graph = undefined
+   -- TODO: build your graph here using stops and lines
   runGUI stops lines graph shortestPath
+
