@@ -19,25 +19,25 @@ instance (Ord a, Ord b) => Ord (Dijk a b) where
 
 
 shortestPath :: (Ord a, Ord b, Num b) => Graph a b -> a -> a -> Maybe ([a], b)
-shortestPath g from to = convert $ dijkstra g M.empty (PQ.insert (Dijk from 0 from) PQ.empty)
+shortestPath g from to = findShortest from to (dijkstra g M.empty (PQ.insert (Dijk from 0 from) PQ.empty))
  -- TODO: implement Dijkstra's algorithm
 
-convert :: Map a (b,a) -> Maybe ([a],b)
-convert = undefined
+findShortest :: a -> a -> Map a (b,a) -> Maybe ([a],b)
+findShortest s = undefined
 
-dijkstra :: (Ord a, Ord b) => Graph a b -> Map a (b, a) -> SkewHeap (Dijk a b) -> Map a (b, a)
+dijkstra :: (Ord a, Ord b, Num b) => Graph a b -> Map a (b, a) -> SkewHeap (Dijk a b) -> Map a (b, a)
 dijkstra g s q
   | isNothing $ PQ.rootOf q = s
   | otherwise = if  x `M.notMember` s
-    then dijkstra g (M.insert x (d, z) s) (foldr (insert . toDijk) q' (adj x g))
+    then dijkstra g (M.insert x (d, z) s) (foldr (insert . toDijk d) q' (adj x g))
     else dijkstra g s q'
     where
       (Dijk x d z) = fromJust $ PQ.rootOf q
       q' = PQ.removeRoot q
 
 
-toDijk :: Edge a b -> Dijk a b
-toDijk e = Dijk (dst e) (label e) (src e)
+toDijk :: (Num b) => b -> Edge a b -> Dijk a b
+toDijk d e = Dijk (dst e) (d + label e) (src e)
 
 
 main :: IO ()
@@ -45,7 +45,7 @@ main = undefined  -- TODO: read arguments, build graph, output shortest path
 
 startGUI :: IO ()
 startGUI = do
-  Right stops <- readStops "your-stops.txt"
-  Right lines <- readLines "your-lines.txt"
+  Right stops <- readStops "data/stops-gbg.txt"
+  Right lines <- readLines "data/lines-gbg.txt"
   let graph = undefined -- TODO: build your graph here using stops and lines
   runGUI stops lines graph shortestPath
