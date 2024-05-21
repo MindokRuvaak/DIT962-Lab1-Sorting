@@ -82,18 +82,18 @@ linesBuilder = map stops
 main :: IO ()
 main = do -- TODO: read arguments, build graph, output shortest path
   [stopsFile, linesFile, from, to] <- getArgs
-  Right stops <- readStops ("data/" ++ stopsFile)
-  Right lines <- readLines ("data/" ++ linesFile)
+  Right stops <- readStops stopsFile
+  Right lines <- readLines linesFile
   let graph = graphBuilder stops lines
   let rawOutput = shortestPath graph from to
-  maybe (putStrLn "There is no path") putStrLn (outputParse rawOutput)
+  maybe (putStrLn "There is no path") putStr (outputParse rawOutput)
   return ()
 
 
 startGUI :: IO ()
 startGUI = do
-  Right stops <- readStops "data/stops-gbg.txt"
-  Right lines <- readLines "data/lines-gbg.txt"
+  Right stops <- readStops "data/stops-nopath.txt"
+  Right lines <- readLines "data/lines-nopath.txt"
   let graph = graphBuilder stops lines
    -- TODO: build your graph here using stops and lines
   runGUI stops lines graph shortestPath
