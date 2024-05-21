@@ -6,6 +6,7 @@ import qualified PrioSkew as PQ -- OBS: a max-heap
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Maybe (isNothing, fromJust)
+import System.Environment
 
 
 -- A djusktra node with a node, its predecessor and the cost to get there
@@ -28,20 +29,20 @@ shortestPath g from to = findShortest from to (dijkstra g M.empty (PQ.skewLeaf (
 
 -- find the shortest path between two nodes given a set of Djikstra nodes
 findShortest :: (Ord a, Ord b, Num b) => a -> a -> Map a (b, a) -> Maybe ([a],b)
-findShortest from to set 
+findShortest from to set
   -- if the end node "to" is not present in the set we cannot reach it and return nothing
   | isNothing $ M.lookup to set = Nothing
   -- if the to node is present we compute the list of nodes taken to reach the end node
   | otherwise = Just (stops, totDist)
-  where 
+  where
     (totDist, _) = fromJust $ M.lookup to set
     stops = gatherStops [] from to set
-  
+
 -- compute the list of nodes needed to reach the end node
 gatherStops :: Ord t => [t] -> t -> t -> Map t (a, t) -> [t]
 gatherStops stops from to set
       | from == to = from:stops
-      | otherwise  = let (_, prevTo) = fromJust $ M.lookup to set 
+      | otherwise  = let (_, prevTo) = fromJust $ M.lookup to set
       -- use reverse here to reduce constant factors, still O(n)
         in reverse (to : gatherStops stops from prevTo set)
 
@@ -65,15 +66,33 @@ dijkstra g s q
 toDijk :: (Num b) => b -> Edge a b -> Dijk a b
 toDijk d e = Dijk (dst e) (d + label e) (src e)
 
+graphBuilder :: [Stop] -> [LineStop] -> Graph String Integer
+graphBuilder stops lineStops = graphBuilder' lineStops $ foldr (addVertex . name) Graph.empty stops
+  where
+    graphBuilder' :: [LineStop] -> Graph String Integer -> Graph String Integer
+    graphBuilder' (x:y:ys) g  = graphBuilder' (y:ys) (addEdge (stopName x) (stopName y) (time y) g)
+    graphBuilder' _  g        = g
+
+outputParse :: Maybe([String], Integer) -> Maybe String
+outputParse Nothing = Nothing
+outputParse (Just(stops, time)) = Just $ show time ++ "\n" ++ unlines stops
+
 main :: IO ()
-main = undefined  -- TODO: read arguments, build graph, output shortest path
+main = do -- TODO: read arguments, build graph, output shortest path
+  [stopsFile, linesFile, from, to] <- getArgs
+  Right stops <- readStops ("data/" ++ stopsFile)
+  Right lines <- readLines ("data/" ++ linesFile)
+  let graph = graphBuilder stops (concatMap Route.stops lines)
+  let rawOutput = shortestPath graph from to
+  maybe (putStrLn "There is no path") print (outputParse rawOutput)
+  return ()
+
 
 startGUI :: IO ()
 startGUI = do
-  Right stops <- readStops "data/stops-gbg.txt"
-  Right lines <- readLines "data/lines-gbg.txt"
-  let nodeGraph = foldr (addVertex . name) Graph.empty stops
-  let graph = undefined
+  Right stops <- readStops "data/stops-air.txt"
+  Right lines <- readLines "data/lines-air.txt"
+  let graph = graphBuilder stops (concatMap Route.stops lines)
    -- TODO: build your graph here using stops and lines
   runGUI stops lines graph shortestPath
 
