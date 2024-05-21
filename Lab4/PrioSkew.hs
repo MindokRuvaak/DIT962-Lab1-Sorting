@@ -5,6 +5,7 @@ module PrioSkew
     rootOf,
     empty,
     removeRoot,
+    skewLeaf,
     {- merge, -}
   )
 where
