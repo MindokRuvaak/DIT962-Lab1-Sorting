@@ -24,19 +24,18 @@ findShortest from to set
   | otherwise = Just (stops, totDist)
   where
     (totDist, _) = fromJust $ M.lookup to set
-    stops = gatherStops [] from to set
+    stops = reverse $ gatherStops [] from to set
 
 -- compute the list of nodes needed to reach the end node
 gatherStops :: Ord t => [t] -> t -> t -> Map t (a, t) -> [t]
 gatherStops stops from to set
       | from == to = from:stops
       | otherwise  = let (_, prevTo) = fromJust $ M.lookup to set
-      -- use reverse here to reduce constant factors, still O(n)
-        in reverse (to : gatherStops stops from prevTo set)
+        in to : gatherStops stops from prevTo set
 
 dijkstra :: (Ord a, Ord b, Num b) => Graph a b -> Map a (b, a) -> PSQ (a, a) b -> Map a (b, a)
 dijkstra g s q
-  -- if queue is empty return the set of all Djikstra nodes
+  -- if queue is empty return the set of all nodes
   | isNothing $ PQ.findMin q = s
   -- otherwise check if we already have seen the node
   | otherwise = if  x `M.notMember` s
@@ -58,33 +57,44 @@ toKeyValuePair d e = ((dst e, src e) , d + label e)
 insertQ :: (Ord a, Ord b) => ((a,a), b) -> PSQ (a,a) b -> PSQ (a,a) b
 insertQ (value, prio) = PQ.insert value prio
 
-graphBuilder :: [Stop] -> [LineStop] -> Graph String Integer
-graphBuilder stops lineStops = graphBuilder' lineStops $ foldr (addVertex . name) Graph.empty stops
-  where
-    graphBuilder' :: [LineStop] -> Graph String Integer -> Graph String Integer
-    graphBuilder' (x:y:ys) g  = graphBuilder' (y:ys) (addEdge (stopName x) (stopName y) (time y) g)
-    graphBuilder' _  g        = g
+graphBuilder :: [Stop] -> [LineTable] -> Graph String Integer
+graphBuilder stops = foldr insertLineTable (foldr (addVertex . name) Graph.empty stops)
 
+-- insert a LineTable of edges into a graph
+insertLineTable :: LineTable -> Graph String Integer -> Graph String Integer
+insertLineTable lt g = lineStopListInsert (stops lt) g
+  where
+    lineStopListInsert :: [LineStop] -> Graph String Integer -> Graph String Integer
+    lineStopListInsert (x:y:ys) g  = lineStopListInsert (y:ys) (addEdge (stopName x) (stopName y) (time y) g)
+    lineStopListInsert _  g        = g
+
+-- format the raw output string
 outputParse :: Maybe([String], Integer) -> Maybe String
 outputParse Nothing = Nothing
 outputParse (Just(stops, time)) = Just $ show time ++ "\n" ++ unlines stops
+
+
+-- small help function to create our list of edges
+linesBuilder :: [LineTable] -> [[LineStop]]
+linesBuilder = map stops
+
 
 main :: IO ()
 main = do -- TODO: read arguments, build graph, output shortest path
   [stopsFile, linesFile, from, to] <- getArgs
   Right stops <- readStops ("data/" ++ stopsFile)
   Right lines <- readLines ("data/" ++ linesFile)
-  let graph = graphBuilder stops (concatMap Route.stops lines)
+  let graph = graphBuilder stops lines
   let rawOutput = shortestPath graph from to
-  maybe (putStrLn "There is no path") print (outputParse rawOutput)
+  maybe (putStrLn "There is no path") putStrLn (outputParse rawOutput)
   return ()
 
 
 startGUI :: IO ()
 startGUI = do
-  Right stops <- readStops "data/stops-air.txt"
-  Right lines <- readLines "data/lines-air.txt"
-  let graph = graphBuilder stops (concatMap Route.stops lines)
+  Right stops <- readStops "data/stops-gbg.txt"
+  Right lines <- readLines "data/lines-gbg.txt"
+  let graph = graphBuilder stops lines
    -- TODO: build your graph here using stops and lines
   runGUI stops lines graph shortestPath
 
