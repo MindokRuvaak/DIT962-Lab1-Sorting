@@ -22,8 +22,10 @@ shortestPath :: (Ord a, Ord b, Num b) => Graph a b -> a -> a -> Maybe ([a], b)
 shortestPath g from to = findShortest from to (dijkstra g M.empty (PQ.insert (Dijk from 0 from) PQ.empty))
  -- TODO: implement Dijkstra's algorithm
 
-findShortest :: a -> a -> Map a (b,a) -> Maybe ([a],b)
-findShortest s = undefined
+findShortest :: (Ord a, Ord b, Num b) => a -> a -> Map a (b, a) -> Maybe ([a],b)
+findShortest from to s = undefined
+  where 
+    (totDist, nextLast) = fromJust $ M.lookup to s
 
 dijkstra :: (Ord a, Ord b, Num b) => Graph a b -> Map a (b, a) -> SkewHeap (Dijk a b) -> Map a (b, a)
 dijkstra g s q
