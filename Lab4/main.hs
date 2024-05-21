@@ -7,6 +7,8 @@ import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Maybe (isNothing, fromJust)
 
+
+-- A djusktra node with a node, its predecessor and the cost to get there
 data Dijk a b
   = Dijk {
     to :: a,
@@ -27,15 +29,21 @@ findShortest s = undefined
 
 dijkstra :: (Ord a, Ord b, Num b) => Graph a b -> Map a (b, a) -> SkewHeap (Dijk a b) -> Map a (b, a)
 dijkstra g s q
+  -- if queue is empty return the set of all Djikstra nodes
   | isNothing $ PQ.rootOf q = s
+  -- otherwise check if we already have seen the node
   | otherwise = if  x `M.notMember` s
+    -- if we have'nt seen the node then we add it to the set of Djikstra nodes
+    -- and add all adjacent nodes to the queue (as Djikstra nodes) 
     then dijkstra g (M.insert x (d, z) s) (foldr (insert . toDijk d) q' (adj x g))
+    -- if we have seen the node already then do nothing
     else dijkstra g s q'
     where
+      -- dequeue operation
       (Dijk x d z) = fromJust $ PQ.rootOf q
       q' = PQ.removeRoot q
 
-
+-- help function to convert the output of adj to Djikstra nodes
 toDijk :: (Num b) => b -> Edge a b -> Dijk a b
 toDijk d e = Dijk (dst e) (d + label e) (src e)
 
