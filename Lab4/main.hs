@@ -21,7 +21,7 @@ instance (Ord a, Ord b) => Ord (Dijk a b) where
 
 
 shortestPath :: (Ord a, Ord b, Num b) => Graph a b -> a -> a -> Maybe ([a], b)
-shortestPath g from to = findShortest from to (dijkstra g M.empty (PQ.insert (Dijk from 0 from) PQ.empty))
+shortestPath g from to = findShortest from to (dijkstra g M.empty (PQ.skewLeaf (Dijk from 0 from)))
  -- TODO: implement Dijkstra's algorithm
 
 findShortest :: (Ord a, Ord b, Num b) => a -> a -> Map a (b, a) -> Maybe ([a],b)
