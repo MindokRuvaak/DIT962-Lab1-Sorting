@@ -25,9 +25,18 @@ shortestPath g from to = findShortest from to (dijkstra g M.empty (PQ.insert (Di
  -- TODO: implement Dijkstra's algorithm
 
 findShortest :: (Ord a, Ord b, Num b) => a -> a -> Map a (b, a) -> Maybe ([a],b)
-findShortest from to s = undefined
+findShortest from to set 
+  | isNothing $ M.lookup to set = Nothing
+  | otherwise = Just (stops, totDist)
   where 
-    (totDist, nextLast) = fromJust $ M.lookup to s
+    (totDist, _) = fromJust $ M.lookup to set
+    stops = gatherStops [] from to set
+  
+gatherStops :: Ord t => [t] -> t -> t -> Map t (a, t) -> [t]
+gatherStops stops from to set
+      | from == to = to:stops
+      | otherwise  = let (_, prevTo) = fromJust $ M.lookup to set 
+        in gatherStops stops from prevTo set ++ [to]
 
 dijkstra :: (Ord a, Ord b, Num b) => Graph a b -> Map a (b, a) -> SkewHeap (Dijk a b) -> Map a (b, a)
 dijkstra g s q
