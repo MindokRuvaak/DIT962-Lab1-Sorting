@@ -19,24 +19,31 @@ instance (Ord a, Ord b) => Ord (Dijk a b) where
   compare d1 d2 = compare (dist d2) (dist d1)
 -- higher priority on shorter distance
 
-
+-- use the djukstra function to compute the set of nodes we can reach and the cost to do so 
+-- (we call these Djikstra nodes or Djik for short) and then compute the shortest path between
+-- two given nodes, returns nothing if there is no path
 shortestPath :: (Ord a, Ord b, Num b) => Graph a b -> a -> a -> Maybe ([a], b)
 shortestPath g from to = findShortest from to (dijkstra g M.empty (PQ.skewLeaf (Dijk from 0 from)))
  -- TODO: implement Dijkstra's algorithm
 
+-- find the shortest path between two nodes given a set of Djikstra nodes
 findShortest :: (Ord a, Ord b, Num b) => a -> a -> Map a (b, a) -> Maybe ([a],b)
 findShortest from to set 
+  -- if the end node "to" is not present in the set we cannot reach it and return nothing
   | isNothing $ M.lookup to set = Nothing
+  -- if the to node is present we compute the list of nodes taken to reach the end node
   | otherwise = Just (stops, totDist)
   where 
     (totDist, _) = fromJust $ M.lookup to set
     stops = gatherStops [] from to set
   
+-- compute the list of nodes needed to reach the end node
 gatherStops :: Ord t => [t] -> t -> t -> Map t (a, t) -> [t]
 gatherStops stops from to set
-      | from == to = to:stops
+      | from == to = from:stops
       | otherwise  = let (_, prevTo) = fromJust $ M.lookup to set 
-        in gatherStops stops from prevTo set ++ [to]
+      -- use reverse here to reduce constant factors, still O(n)
+        in reverse (to : gatherStops stops from prevTo set)
 
 dijkstra :: (Ord a, Ord b, Num b) => Graph a b -> Map a (b, a) -> SkewHeap (Dijk a b) -> Map a (b, a)
 dijkstra g s q
