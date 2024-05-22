@@ -70,9 +70,9 @@ insertLineTable lt g = lineStopListInsert (stops lt) g
     lineStopListInsert _  g        = g
 
 -- format the raw output string
-outputParse :: Maybe([String], Integer) -> Maybe String
-outputParse Nothing = Nothing
-outputParse (Just(stops, time)) = Just $ show time ++ "\n" ++ unlines stops
+outputParse :: Maybe([String], Integer) -> String
+outputParse Nothing              = show 0 ++ "\n"
+outputParse (Just (stops, time)) = show time ++ "\n" ++ unlines stops
 
 
 -- small help function to create our list of edges
@@ -87,14 +87,14 @@ main = do -- TODO: read arguments, build graph, output shortest path
   Right lines <- readLines linesFile
   let graph = graphBuilder stops lines
   let rawOutput = shortestPath graph from to
-  maybe (putStrLn "There is no path") putStr (outputParse rawOutput)
+  putStr (outputParse rawOutput)
   return ()
 
 
 startGUI :: IO ()
 startGUI = do
-  Right stops <- readStops "data/stops-gbg.txt"
-  Right lines <- readLines "data/lines-gbg.txt"
+  Right stops <- readStops "data/stops-nopath.txt"
+  Right lines <- readLines "data/lines-nopath.txt"
   let graph = graphBuilder stops lines
    -- TODO: build your graph here using stops and lines
   runGUI stops lines graph shortestPath
