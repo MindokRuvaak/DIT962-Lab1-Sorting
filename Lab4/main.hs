@@ -63,11 +63,11 @@ graphBuilder stops = foldr insertLineTable (foldr (addVertex . name) Graph.empty
 
 -- insert a LineTable of edges into a graph
 insertLineTable :: LineTable -> Graph String Integer -> Graph String Integer
-insertLineTable lt g = lineStopListInsert (stops lt) g
+insertLineTable lt = lineStopListInsert (stops lt)
   where
     lineStopListInsert :: [LineStop] -> Graph String Integer -> Graph String Integer
-    lineStopListInsert (x:y:ys) g  = lineStopListInsert (y:ys) (addEdge (stopName x) (stopName y) (time y) g)
-    lineStopListInsert _  g        = g
+    lineStopListInsert (x:y:ys) graph  = lineStopListInsert (y:ys) (addEdge (stopName x) (stopName y) (time y) graph)
+    lineStopListInsert _  graph        = graph
 
 -- format the raw output string
 outputParse :: Maybe([String], Integer) -> String
@@ -75,27 +75,22 @@ outputParse Nothing              = "0\n"
 outputParse (Just (stops, time)) = show time ++ "\n" ++ unlines stops
 
 
--- small help function to create our list of edges
-linesBuilder :: [LineTable] -> [[LineStop]]
-linesBuilder = map stops
-
-
 main :: IO ()
-main = do -- TODO: read arguments, build graph, output shortest path
+main = do 
   [stopsFile, linesFile, from, to] <- getArgs
-  Right stops <- readStops stopsFile
-  Right lines <- readLines linesFile
-  let graph = graphBuilder stops lines
+  Right stops       <- readStops stopsFile
+  Right lineTables  <- readLines linesFile
+  let graph = graphBuilder stops lineTables
   let rawOutput = shortestPath graph from to
   putStr (outputParse rawOutput)
   return ()
 
-
+-- this gives an unised warning but since its part of 
+-- the original skeleton we presume its fine
 startGUI :: IO ()
 startGUI = do
   Right stops <- readStops "data/stops-nopath.txt"
-  Right lines <- readLines "data/lines-nopath.txt"
-  let graph = graphBuilder stops lines
-   -- TODO: build your graph here using stops and lines
-  runGUI stops lines graph shortestPath
+  Right lineTables <- readLines "data/lines-nopath.txt"
+  let graph = graphBuilder stops lineTables
+  runGUI stops lineTables graph shortestPath
 
