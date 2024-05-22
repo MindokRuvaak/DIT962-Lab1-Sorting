@@ -31,7 +31,7 @@ data Edge a b = Edge
 -- basically default implementation but its nice to have
 instance (Eq a, Eq b) => Eq (Edge a b) where
   (==) :: Edge a b -> Edge a b -> Bool
-  (==) e1 e2 = src e1 == src e2 && dst e1 == dst e2
+  (==) e1 e2 = src e1 == src e2 && dst e1 == dst e2 && label e1 == label e2
   (/=) :: Edge a b -> Edge a b -> Bool
   (/=) e1 e2 = not (e1 == e2)
 
@@ -43,11 +43,16 @@ instance (Ord a, Ord b) => Ord (Edge a b) where
     | src e1 > src e2 = GT
     | dst e1 < dst e2 = LT
     | dst e1 > dst e2 = GT
+    | label e1 < label e2 = LT
+    | label e1 > label e2 = GT
     | otherwise = EQ
 
 -- A graph with nodes of type a and labels of type b.
 -- TODO: implement a graph with adjacency lists, hint: use a Map.
-data Graph a b = Graph {kvmap :: Map a (Set (Edge a b)) } deriving Show
+data Graph a b = Graph 
+  {
+    kvmap :: Map a (Set (Edge a b))
+  } deriving (Show)
 
 -- | Create an empty graph
 empty :: Graph a b
@@ -70,7 +75,7 @@ addEdge v w l g
   | isNothing (M.lookup v (kvmap g)) || isNothing (M.lookup w (kvmap g))
     = g
   -- replace the old key value pair with the updated one
-  | otherwise = Graph (M.insert v (S.insert e es) (kvmap g))
+  | otherwise = Graph (M.insertWith min v (S.insert e es) (kvmap g))
     where
       e = Edge v w l
       es = fromJust (M.lookup v (kvmap g))
