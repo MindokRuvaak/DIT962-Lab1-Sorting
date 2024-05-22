@@ -71,7 +71,7 @@ insertLineTable lt g = lineStopListInsert (stops lt) g
 
 -- format the raw output string
 outputParse :: Maybe([String], Integer) -> String
-outputParse Nothing              = show 0 ++ "\n"
+outputParse Nothing              = "0\n"
 outputParse (Just (stops, time)) = show time ++ "\n" ++ unlines stops
 
 
