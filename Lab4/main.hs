@@ -33,6 +33,7 @@ gatherStops stops from to set
       | otherwise  = let (_, prevTo) = fromJust $ M.lookup to set
         in to : gatherStops stops from prevTo set
 
+-- computes the set of nodes we can rach from any given node along with its cost
 dijkstra :: (Ord a, Ord b, Num b) => Graph a b -> Map a (b, a) -> PSQ (a, a) b -> Map a (b, a)
 dijkstra g s q
   -- if queue is empty return the set of all nodes
@@ -92,8 +93,8 @@ main = do -- TODO: read arguments, build graph, output shortest path
 
 startGUI :: IO ()
 startGUI = do
-  Right stops <- readStops "data/stops-nopath.txt"
-  Right lines <- readLines "data/lines-nopath.txt"
+  Right stops <- readStops "data/stops-gbg.txt"
+  Right lines <- readLines "data/lines-gbg.txt"
   let graph = graphBuilder stops lines
    -- TODO: build your graph here using stops and lines
   runGUI stops lines graph shortestPath
