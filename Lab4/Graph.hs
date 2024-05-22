@@ -75,7 +75,7 @@ addEdge v w l g
   | isNothing (M.lookup v (kvmap g)) || isNothing (M.lookup w (kvmap g))
     = g
   -- replace the old key value pair with the updated one
-  | otherwise = Graph (M.insert v (S.insert e es) (kvmap g))
+  | otherwise = Graph (M.insertWith min v (S.insert e es) (kvmap g))
     where
       e = Edge v w l
       es = fromJust (M.lookup v (kvmap g))
