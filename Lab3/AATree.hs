@@ -1,6 +1,4 @@
 {-# OPTIONS -Wall #-}
-{-# OPTIONS_GHC -Wno-unused-matches #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 --------------------------------------------------------------------------------
 
@@ -14,6 +12,7 @@ module AATree
     size, -- AATree a -> Int
     height, -- AATree a -> Int
     checkTree, -- Ord a => AATree a -> Bool
+    fromList, -- Its nice to have :3
   )
 where
 import Test.QuickCheck ()
@@ -53,7 +52,7 @@ get toGet (Node _ l v r) = case compare toGet v of
 -- | split any 4 nodes into 2 nodes again
 -- | O(1)
 split :: AATree a -> AATree a
-split x@(Node xk a xv y@(Node yk b yv z@(Node {}))) =
+split x@(Node xk a xv (Node yk b yv z@(Node {}))) =
   if xk == yk && xk == level z
     then
       let newX = Node xk a xv b
@@ -67,7 +66,7 @@ split tree = tree
 -- | O(1)
 skew :: AATree a -> AATree a
 -- if malformed 3-node
-skew y@(Node yk x@(Node xk a xv b) yv c) =
+skew y@(Node yk (Node xk a xv b) yv c) =
   if yk == xk
     then
       let newY = Node yk b yv c
@@ -117,7 +116,7 @@ height (Node _ l _ r) = 1 + max (height l) (height r)
 -- | O(?)
 remove :: Ord a => a -> AATree a -> AATree a
 remove _ Empty = Empty
-remove toRemove t@(Node k l v r) = case compare toRemove v of
+remove toRemove (Node k l v r) = case compare toRemove v of
   LT -> Node k (remove toRemove l) v r
   EQ -> error "remove not implemented"
   GT -> Node k l v (remove toRemove r)
@@ -159,7 +158,7 @@ checkTree root =
 -- | O(n)
 isSorted :: Ord a => [a] -> Bool
 isSorted []   = True
-isSorted [x]  = True
+isSorted [_]  = True
 isSorted (x:y:ys) = (x <= y) && isSorted (y:ys)
 
 -- | Check if the invariant is true for a single AA node
@@ -214,5 +213,6 @@ rightSub Empty          = Empty
 
 -- | AATree quickcheck property using our invariant function
 -- | O(n²)
-prop_AATree :: Ord a => [a] -> Bool
-prop_AATree = checkTree . fromList
+-- prop_AATree :: Ord a => [a] -> Bool
+-- prop_AATree = checkTree . fromList
+-- commented out bc GHC will complain otherwise
